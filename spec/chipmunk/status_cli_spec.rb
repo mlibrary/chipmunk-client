@@ -63,7 +63,17 @@ RSpec.describe Chipmunk::StatusCLI do
       context "and ARGF contains no ids" do
         let(:argf) { '' }
 
-        it { expect{ bags }.to raise_error(ArgumentError) }
+        it "should exit 1 and output usage and the error to stderr" do
+          status = 0
+
+          expect do
+            bags
+          rescue SystemExit => e
+            status = e.status
+          end.to output(/Usage:.*ArgumentError/m).to_stderr
+
+          expect(status).to eq 1
+        end
       end
 
       context "and ARGF has ids and a blank line" do
@@ -83,14 +93,37 @@ RSpec.describe Chipmunk::StatusCLI do
         expect(bags).to eq %w[cli_id file_id]
       end
     end
+
+    context "when given `path_to_a_file_that_does_not_exist`" do
+      let(:args) { ['path_to_a_file_that_does_not_exist'] }
+
+      before(:each) do
+        allow(ARGF).to receive(:read).and_raise(Errno::ENOENT.new(
+          "No such file or directory @ rb_sysopen - #{args[0]}"
+        ))
+      end
+
+      it "should exit 1 and output usage and the error to stderr" do
+        status = 0
+
+        expect do
+          bags
+        rescue SystemExit => e
+          status = e.status
+        end.to output(/Usage:.*Errno::ENOENT.*#{args[0]}/m).to_stderr
+
+        expect(status).to eq 1
+      end
+    end
   end
 
   describe "#run" do
     let(:run) { described_class.new(args, client_factory: client_factory).run }
     let(:client_factory) { double(:client_factory, new: client) }
-    let(:client) { double(:client, get: bag_hash) }
+    let(:client) { double(:client) }
     let(:bag_hash) { {} }
     let(:bags) { %w[bag1 bag2] }
+    let(:queue_array) { [] }
 
     let(:args) do
       [].tap do |a|
@@ -99,6 +132,13 @@ RSpec.describe Chipmunk::StatusCLI do
           a << bag
         end
       end
+    end
+
+    before(:each) do
+      allow(client).to receive(:get).with(%r{^/v1/bags})
+                                    .and_return(bag_hash)
+      allow(client).to receive(:get).with(%r{^/v1/queue})
+                                    .and_return(queue_array)
     end
 
     it "queries /v1/bags/id for each bag" do
@@ -131,8 +171,155 @@ RSpec.describe Chipmunk::StatusCLI do
       let(:bags) { ['known_bag'] }
       let(:bag_hash) { { 'stored' => false } }
 
-      it "outputs not_stored" do
-        expect{ run }.to output(/known_bag\tnot_stored/).to_stdout
+      it 'queries /v1/queue?package=known_bag' do
+        expect(client).to receive(:get).with('/v1/queue?package=known_bag')
+        run
+      end
+
+      context 'when there are no queue objects' do
+        let(:queue_array) { [] }
+
+        it "outputs not_loaded" do
+          expect{ run }.to output(/known_bag\tnot_loaded/).to_stdout
+        end
+      end
+
+      context 'when the only queue object is pending' do
+        let(:queue_array) { [{ "status" => "PENDING" }] }
+
+        it "outputs pending" do
+          expect{ run }.to output(/known_bag\tpending/).to_stdout
+        end
+      end
+
+      context 'when the only queue object is done' do
+        let(:queue_array) { [{ "status" => "DONE" }] }
+
+        it "outputs storing" do
+          expect{ run }.to output(/known_bag\tstoring/).to_stdout
+        end
+      end
+
+      context 'when the only queue object is failed' do
+        let(:queue_array) { [{ "status" => "FAILED", "error" => "error\tmessage" }] }
+
+        it "outputs failed with error message" do
+          expect{ run }.to output(/known_bag\tfailed: "error\\tmessage"/).to_stdout
+        end
+      end
+
+      context 'when the only queue object has an unrecognized status' do
+        let(:queue_array) { [{ "status" => "something new and weird" }] }
+
+        it "outputs unrecognized_status with status" do
+          # My thinking here is that, should new statuses ever be added
+          # for any reason, this will make it easy to debug.
+          expect{ run }.to output(/known_bag\tunrecognized_status: "something new and weird"/).to_stdout
+        end
+      end
+
+      context "there's a newer pending object and an older failed object" do
+        let(:queue_array) do
+          [
+            {
+              "updated_at" => "2019-01-01 16:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "problem",
+            },
+
+            {
+              "updated_at" => "2019-01-01 17:00:00 UTC",
+              "status" => "PENDING",
+            },
+          ]
+        end
+
+        it "only cares about the newer one" do
+          expect{ run }.to output(/known_bag\tpending/).to_stdout
+        end
+      end
+
+      context "there's an older pending object and a newer failed object" do
+        let(:queue_array) do
+          [
+            {
+              "updated_at" => "2019-01-01 18:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "problem",
+            },
+
+            {
+              "updated_at" => "2019-01-01 17:00:00 UTC",
+              "status" => "PENDING",
+            },
+          ]
+        end
+
+        it "only cares about the newer one" do
+          expect{ run }.to output(/known_bag\tfailed/).to_stdout
+        end
+      end
+
+      context "there are five failed queues" do
+        let(:queue_array) do
+          [
+            {
+              "updated_at" => "2019-01-01 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "first",
+            },
+
+            {
+              "updated_at" => "2019-01-02 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "second",
+            },
+
+            {
+              "updated_at" => "2019-01-03 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "third",
+            },
+
+            {
+              "updated_at" => "2019-01-04 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "fourth",
+            },
+
+            {
+              "updated_at" => "2019-01-05 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "fifth",
+            },
+          ]
+        end
+
+        it "only cares about the newest one" do
+          expect{ run }.to output(/known_bag\tfailed: "fifth"/).to_stdout
+        end
+      end
+
+      context "two failed queues have different timezones" do
+        let(:queue_array) do
+          [
+            {
+              "updated_at" => "2019-01-01 10:00:00 UTC",
+              "status" => "FAILED",
+              "error" => "first",
+            },
+
+            {
+              "updated_at" => "2019-01-01 08:00:00 EDT",
+              "status" => "FAILED",
+              "error" => "second",
+            },
+          ]
+        end
+
+        it "accounts for the timezone when comparing" do
+          expect{ run }.to output(/known_bag\tfailed: "second"/).to_stdout
+        end
       end
     end
   end
