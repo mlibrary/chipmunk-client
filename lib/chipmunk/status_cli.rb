@@ -206,6 +206,8 @@ module Chipmunk
 
     def v1_bags_response
       @v1_bags_response ||= client.get("/v1/bags/#{bag}")
+    rescue RestClient::Exception => e
+      @v1_bags_response = JSON.parse("#{e.response}")
     end
 
     def latest_queue_object

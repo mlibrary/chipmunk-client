@@ -3,6 +3,19 @@
 require "spec_helper"
 require "chipmunk/status_cli"
 
+class ResponseDouble
+  attr_reader :code, :body
+
+  def initialize(code, body)
+    @code = code
+    @body = body
+  end
+
+  def to_s
+    body
+  end
+end
+
 RSpec.describe Chipmunk::StatusCLI do
   let(:client_factory) { double(:factory) }
 
@@ -155,6 +168,19 @@ RSpec.describe Chipmunk::StatusCLI do
 
       it "outputs not_found" do
         expect{ run }.to output(/bad_bag\tnot_found/).to_stdout
+      end
+
+      context 'when the id causes a RestClient::NotFound exception' do
+        let(:response) { ResponseDouble.new(404, bag_hash.to_json) }
+
+        before(:each) do
+          allow(client).to receive(:get).with('/v1/bags/bad_bag')
+            .and_raise(RestClient::NotFound.new(response))
+        end
+
+        it "outputs not_found" do
+          expect{ run }.to output(/bad_bag\tnot_found/).to_stdout
+        end
       end
     end
 
