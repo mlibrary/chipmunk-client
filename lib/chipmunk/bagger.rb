@@ -17,6 +17,14 @@ module Chipmunk
       @files = []
     end
 
+    def run
+      check_bag
+      make_bag
+    rescue
+      move_files_out_of_bag
+      raise
+    end
+
     def check_bag
       if src_path && File.exist?(File.join(bag_path, "data"))
         raise "Source path specified and #{bag_path}/data already exists; won't overwrite"

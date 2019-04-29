@@ -19,11 +19,7 @@ module Chipmunk
     end
 
     def run
-      bagger.check_bag
-      bagger.make_bag
-    rescue
-      bagger.move_files_out_of_bag
-      raise
+      bagger.run
     end
 
     private
