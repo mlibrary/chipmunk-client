@@ -28,6 +28,7 @@ module Chipmunk
     end
 
     def move_files_out_of_bag
+      FileUtils.mkdir_p src_path
       @files.each do |relative_path, src_path|
         path = File.join(bag.data_dir, relative_path)
         FileUtils.mv path, src_path
