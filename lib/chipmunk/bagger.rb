@@ -14,6 +14,15 @@ module Chipmunk
       @bag_path = params[:bag_path]
 
       @src_path = File.join(params[:src_path], "") if params[:src_path]
+      @files = []
+    end
+
+    def run
+      check_bag
+      make_bag
+    rescue
+      move_files_out_of_bag
+      raise
     end
 
     def check_bag
@@ -24,6 +33,16 @@ module Chipmunk
       if File.exist?(File.join(bag_path, "chipmunk-info.txt"))
         raise "chipmunk-info.txt already exists, won't overwrite"
       end
+    end
+
+    def move_files_out_of_bag
+      FileUtils.mkdir_p src_path
+      @files.each do |relative_path, src_path|
+        path = File.join(bag.data_dir, relative_path)
+        FileUtils.mv path, src_path
+      end
+    rescue
+      warn "Some of your files may still be in #{bag.data_dir}"
     end
 
     protected
@@ -54,6 +73,7 @@ module Chipmunk
         # file_to_add is a resolvable path on disk to an actual file.
         relative_path = remove_prefix(src_path, file_to_add)
         bag.add_file_by_moving(relative_path, file_to_add)
+        @files << [relative_path, file_to_add]
       end
 
       FileUtils.rmdir src_path if Dir.empty?(src_path)

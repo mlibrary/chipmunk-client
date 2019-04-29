@@ -19,8 +19,7 @@ module Chipmunk
     end
 
     def run
-      bagger.check_bag
-      bagger.make_bag
+      bagger.run
     end
 
     private
