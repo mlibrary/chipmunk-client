@@ -23,6 +23,22 @@ class ASpaceClient
     JSON.parse(response.body)['results']
   end
 
+  def get(id)
+    response = conn.get(id)
+    handle_error(response)
+
+    JSON.parse(response.body)
+  end
+
+  def update(id,data)
+    response = conn.post(id) do |req|
+      req.body = data.to_json
+      req.headers['Content-Type'] = 'application/json'
+    end
+
+    handle_error(response)
+  end
+
   def create_digital_object(altid,barcode)
     data = {
       "jsonmodel_type": "digital_object",
@@ -44,9 +60,6 @@ class ASpaceClient
       req.body = data.to_json
       req.headers['Content-Type'] = 'application/json'
     end
-
-    handle_error(response)
-
   end
 
   private
@@ -77,42 +90,97 @@ class ASpaceClient
 
 end
 
-altid = 'ROSSICA-2'
-barcode = '39015087083518'
+
+class DigitalObjectLinker
+
+  def initialize(client,altid,barcode)
+    @client = client
+    @altid = altid
+    @barcode = barcode
+  end
+
+  def link
+    digital_objects = client.search(altid,primary_type: 'digital_object')
+
+    if !digital_objects.empty?
+      show_digital_objects(digital_objects)
+    else
+      link_digital_object(client.create_digital_object(altid,barcode))
+    end
+  end
+
+  def show_digital_objects(digital_objects)
+    puts "existing digital object(s)"
+    digital_objects.each do |result|
+      # TODO: verify the digital object has the correct barcode
+      # TODO: verify the digital object has the file version
+      puts %w(id title).map { |f| result[f]}.join("\t")
+      if result['linked_instance_urls']
+        puts "linked archival object(s): " + result['linked_instance_uris'].join(" ")
+      else
+        print "link to digital object Y/[N]?"
+        entry = STDIN.gets.strip
+        link_digital_object(result['id']) if entry == 'Y'
+      end
+    end
+  end
+
+  def find_archival_object
+    archival_objects = client.search(altid,primary_type: 'archival_object').reject { |r| r['types'].include?('pui_only') }
+    if !archival_objects.empty?
+      puts "archival object(s):"
+      archival_objects.zip(1..archival_objects.length).each do |result,index|
+        puts "#{index}) " + %w(id title types).map { |f| result[f]}.join("\t")
+      end
+    end
+
+    print "Which is the correct one [1]?: "
+    entry = STDIN.gets.strip.to_i
+
+    if(!entry || entry > archival_objects.length)
+      puts "#{entry} not a number or out of bounds"
+      return nil
+    else
+      obj_index = entry - 1 || 0
+      return archival_objects[obj_index]['id']
+    end
+  end
+
+  def link_digital_object(digital_object_id)
+    if(archival_object_id = find_archival_object)
+      create_instance(archival_object_id, digital_object_id)
+    else
+      puts "Can't find archival object for #{altid}"
+    end
+  end
+
+  def create_instance(archival_object_id,digital_object_id)
+    puts "Will update #{archival_object_id}"
+
+    archival_object = client.get(archival_object_id)
+
+    archival_object["instances"].append(
+      {
+        "instance_type" => "digital_object",
+        "digital_object" => { "ref" => digital_object_id }
+      }
+    )
+
+    client.update(archival_object_id, archival_object)
+  end
+
+  private
+
+  attr_reader :client, :altid, :barcode
+end
+
+
 
 # read config from yaml
 config = ENV['ASPACE_CLIENT_CONFIG'] || 'config/aspace_client.yaml'
 client = ASpaceClient.new(**YAML.load(File.read(config)))
 
-digital_objects = client.search(altid,primary_type: 'digital_object')
+altid = 'ROSSICA-3'
+barcode = '39015087083526'
 
-if !digital_objects.empty?
-  puts "existing digital object(s)"
-  digital_objects.each do |result|
-    puts %w(id title).map { |f| result[f]}.join("\t")
-    if result['linked_instance_urls']
-      puts "linked archival object(s): " + result['linked_instance_uris'].join(" ")
-    end
-  end
-
-  # TODO: verify the digital object has the correct barcode
-  # TODO: verify the digital object has the file version
-else
-  client.create_digital_object(altid,barcode)
-end
-
-archival_objects = client.search(altid,primary_type: 'archival_object').reject { |r| r['types'].include?('pui_only') }
-if !archival_objects.empty?
-  puts "archival object(s):"
-  archival_objects.each do |result|
-    puts %w(id title types).map { |f| result[f]}.join("\t")
-  end
-end
-
-# TODO: after finding the archival object, see if it's already linked to the digital object above
-# if the digital object is linked to some other archival object, error
-
-require 'pry'
-binding.pry
-
-1
+DigitalObjectLinker.new(client,altid,barcode).link
