@@ -60,6 +60,9 @@ class ASpaceClient
       req.body = data.to_json
       req.headers['Content-Type'] = 'application/json'
     end
+
+    handle_error(response)
+    JSON.parse(response.body)['uri']
   end
 
   private
@@ -115,7 +118,7 @@ class DigitalObjectLinker
       # TODO: verify the digital object has the correct barcode
       # TODO: verify the digital object has the file version
       puts %w(id title).map { |f| result[f]}.join("\t")
-      if result['linked_instance_urls']
+      if result['linked_instance_uris']
         puts "linked archival object(s): " + result['linked_instance_uris'].join(" ")
       else
         print "link to digital object Y/[N]?"
@@ -174,13 +177,19 @@ class DigitalObjectLinker
   attr_reader :client, :altid, :barcode
 end
 
-
-
 # read config from yaml
 config = ENV['ASPACE_CLIENT_CONFIG'] || 'config/aspace_client.yaml'
 client = ASpaceClient.new(**YAML.load(File.read(config)))
 
-altid = 'ROSSICA-3'
-barcode = '39015087083526'
+altid_barcode_mapping = ARGV[0] || raise("Usage: #{$0} altid_barcode_mapping.txt")
+puts altid_barcode_mapping
 
-DigitalObjectLinker.new(client,altid,barcode).link
+File.open(altid_barcode_mapping).each_line do |line|
+  (altid,barcode) = line.strip.split("\t")
+  if altid && barcode && altid =~ /^[A-Z]+-\d+$/ && barcode =~ /^39015\d{9}$/
+    puts "linking #{altid} #{barcode}"
+    DigitalObjectLinker.new(client,altid,barcode).link
+  else
+    print "bad line #{line}"
+  end
+end
