@@ -27,8 +27,7 @@ module Chipmunk
     attr_reader :content_type, :external_id, :src_path, :bag_path, :params
 
     def make_bagger
-      class_for(content_type).new(content_type: content_type,
-                                   external_id: external_id,
+      class_for(content_type).new(external_id: external_id,
                                    src_path: src_path,
                                    bag_path: bag_path,
                                    **params)

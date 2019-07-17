@@ -8,8 +8,13 @@ require "chipmunk/bagger"
 module Chipmunk
   class Bagger::Audio < Bagger
 
-    def initialize(params)
-      super(params.merge(content_type: "audio"))
+    def initialize(external_id:, bag_path:, src_path: nil)
+      super(
+        content_type: "audio",
+        external_id: external_id,
+        bag_path: bag_path,
+        src_path: src_path
+      )
     end
 
     # Moves data from src_path to bag_path/data, adds metadata, and generates

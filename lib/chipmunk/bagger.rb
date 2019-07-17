@@ -8,12 +8,11 @@ module Chipmunk
 
     attr_accessor :content_type, :external_id, :bag_path
 
-    def initialize(params)
-      @content_type = params[:content_type]
-      @external_id = params[:external_id]
-      @bag_path = params[:bag_path]
-
-      @src_path = File.join(params[:src_path], "") if params[:src_path]
+    def initialize(content_type:, external_id:, bag_path:, src_path: nil)
+      @content_type = content_type
+      @external_id = external_id
+      @bag_path = bag_path
+      @src_path = File.join(src_path, "") if src_path
       @files = []
     end
 
