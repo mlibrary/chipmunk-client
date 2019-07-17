@@ -6,6 +6,10 @@ require "chipmunk/bag"
 module Chipmunk
   class Bagger::Digital < Bagger
 
+    def initialize(params)
+      super(params.merge(content_type: "digital"))
+    end
+
     # validates the bag at bag_path, adds chipmunk_info.txt, and updates the
     # manifest.
     def make_bag

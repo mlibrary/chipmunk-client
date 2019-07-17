@@ -53,8 +53,7 @@ def fixture(*path)
 end
 
 def make_bag(content_type, **kwargs)
-  described_class.new(content_type: content_type,
-                      external_id: external_id,
+  described_class.new(external_id: external_id,
                       src_path: @src_path,
                       bag_path: @bag_path, **kwargs).make_bag
 end

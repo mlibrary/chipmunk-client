@@ -8,6 +8,10 @@ require "chipmunk/bagger"
 module Chipmunk
   class Bagger::Audio < Bagger
 
+    def initialize(params)
+      super(params.merge(content_type: "audio"))
+    end
+
     # Moves data from src_path to bag_path/data, adds metadata, and generates
     # appropriate manifests
     def make_bag
