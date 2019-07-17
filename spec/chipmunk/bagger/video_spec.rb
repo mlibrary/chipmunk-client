@@ -4,20 +4,17 @@ require "spec_helper"
 require "chipmunk/bagger/video"
 
 RSpec.describe Chipmunk::Bagger::Video do
-
+  include_context "fixture data"
   let(:external_id) { "12345" }
   let(:fake_uuid) { "fakeuuid" }
   let(:good_data_path) { fixture("video", "upload", "good", "data") }
   let(:bag_data) { File.join(@bag_path, "data") }
 
-  include_context "fixture data"
   it_behaves_like "a bagger", "video"
 
   context "with stubbed Chipmunk::Bag" do
     include_context "stubbed Chipmunk::Bag"
     let(:fixture_data) { good_data_path }
-
-    before(:each) { allow(bag).to receive(:add_file_by_moving) }
 
     ["metadata.yaml", "miam0001.mov", "mipm0001.mov", "tn0001_1.jpg",
      "tn0001_2.jpg", "tn0001_3.jpg", "tn0001_4.jpg", "tn0001_5.jpg"].each do |file|
