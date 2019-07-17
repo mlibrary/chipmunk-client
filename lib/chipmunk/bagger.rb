@@ -2,11 +2,14 @@
 
 require "securerandom"
 require "chipmunk/bag"
+require "chipmunk/check/bag_exists"
+require "chipmunk/check/chipmunk_info"
 
 module Chipmunk
   class Bagger
 
     attr_accessor :content_type, :external_id, :bag_path
+    attr_reader :src_path
 
     def initialize(content_type:, external_id:, bag_path:, src_path: nil)
       @content_type = content_type
@@ -25,13 +28,10 @@ module Chipmunk
     end
 
     def check_bag
-      if src_path && File.exist?(File.join(bag_path, "data"))
-        raise "Source path specified and #{bag_path}/data already exists; won't overwrite"
-      end
-
-      if File.exist?(File.join(bag_path, "chipmunk-info.txt"))
-        raise "chipmunk-info.txt already exists, won't overwrite"
-      end
+      errors = checks
+        .map(&:run)
+        .flatten
+      raise RuntimeError, errors.join("\n") unless errors.empty?
     end
 
     def move_files_out_of_bag
@@ -46,7 +46,7 @@ module Chipmunk
 
     protected
 
-    attr_accessor :src_path
+    attr_writer :src_path
 
     def bag
       @bag ||= Bag.new bag_path
@@ -76,6 +76,13 @@ module Chipmunk
       end
 
       FileUtils.rmdir src_path if Dir.empty?(src_path)
+    end
+
+    def checks
+      [
+        Check::ChipmunkInfo.new(self),
+        Check::BagExists.new(self)
+      ]
     end
 
     private
