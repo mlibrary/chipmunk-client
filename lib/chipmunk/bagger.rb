@@ -44,6 +44,13 @@ module Chipmunk
       warn "Some of your files may still be in #{bag.data_dir}"
     end
 
+    def checks
+      [
+        Check::ChipmunkInfo.new(self),
+        Check::BagExists.new(self)
+      ]
+    end
+
     protected
 
     attr_writer :src_path
@@ -76,13 +83,6 @@ module Chipmunk
       end
 
       FileUtils.rmdir src_path if Dir.empty?(src_path)
-    end
-
-    def checks
-      [
-        Check::ChipmunkInfo.new(self),
-        Check::BagExists.new(self)
-      ]
     end
 
     private

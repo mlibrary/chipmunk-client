@@ -2,6 +2,7 @@
 
 require "find"
 require "chipmunk/bagger"
+require "chipmunk/check/video"
 
 module Chipmunk
   class Bagger::Video < Bagger
@@ -21,6 +22,10 @@ module Chipmunk
       move_files_to_bag
       bag.write_chipmunk_info(common_tags)
       bag.manifest!
+    end
+
+    def checks
+      super + [Check::Video.new(self)]
     end
 
   end
