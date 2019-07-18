@@ -3,10 +3,10 @@
 use File::Basename;
 
 # lightweight ingest for video - just checks file presence and naming
-# parameter should be the external ID (unused) and a directory containing a bag
+# parameter should be the external ID (expected to be included in the file
+# names) and a directory containing the files
 my $EXTERNAL_ID = shift;
-my $BAG_DIRECTORY = shift;
-my $DIRECTORY = "$BAG_DIRECTORY/data";
+my $DIRECTORY = shift;
 
 my %files = map { basename($_) => 1 } glob("$DIRECTORY/*");
 
