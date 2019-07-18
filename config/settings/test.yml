@@ -6,4 +6,4 @@ api_key: <%= ENV["CHIPMUNK_API_KEY"] %>
 validate_before_upload: true
 validate:
   external:
-    video: "bin/validate_video.pl"
+    video: "spec/support/bin/validate_video.pl"
