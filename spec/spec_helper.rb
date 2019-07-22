@@ -5,6 +5,9 @@ require "faker"
 require "simplecov"
 SimpleCov.start
 
+require "chipmunk/config"
+Chipmunk.env = "test"
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -53,8 +56,7 @@ def fixture(*path)
 end
 
 def make_bag(content_type, **kwargs)
-  described_class.new(content_type: content_type,
-                      external_id: external_id,
+  described_class.new(external_id: external_id,
                       src_path: @src_path,
                       bag_path: @bag_path, **kwargs).make_bag
 end

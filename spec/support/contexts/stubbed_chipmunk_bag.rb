@@ -13,5 +13,6 @@ RSpec.shared_context "stubbed Chipmunk::Bag" do
   before(:each) do
     allow(SecureRandom).to receive(:uuid).and_return(fake_uuid)
     allow(Chipmunk::Bag).to receive(:new).and_return(bag)
+    allow(bag).to receive(:add_file_by_moving)
   end
 end

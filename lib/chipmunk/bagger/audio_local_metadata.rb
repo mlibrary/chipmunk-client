@@ -6,11 +6,16 @@ require "chipmunk/bagger"
 
 module Chipmunk
   class Bagger::AudioLocalMetadata < Bagger
-    def initialize(params)
-      super(params)
-      @metadata_url  = params[:metadata_url]
-      @metadata_type = params[:metadata_type]
-      @metadata_path = params[:metadata_path]
+    def initialize(external_id:, bag_path:, src_path: nil, metadata_url:, metadata_type:, metadata_path:)
+      super(
+        content_type: "video",
+        external_id: external_id,
+        bag_path: bag_path,
+        src_path: src_path
+      )
+      @metadata_url  = metadata_url
+      @metadata_type = metadata_type
+      @metadata_path = metadata_path
     end
 
     # Moves data from src_path to bag_path/data, adds metadata, and generates

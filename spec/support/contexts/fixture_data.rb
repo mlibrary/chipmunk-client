@@ -1,6 +1,6 @@
-
-
 # frozen_string_literal: true
+
+require "tmpdir"
 
 RSpec.shared_context "fixture data" do
   # set up data in safe area
