@@ -8,9 +8,9 @@ require "chipmunk/bagger"
 module Chipmunk
   class Bagger::Audio < Bagger
 
-    def initialize(external_id:, bag_path:, src_path: nil)
+    def initialize(content_type:, external_id:, bag_path:, src_path: nil)
       super(
-        content_type: "audio",
+	content_type: content_type,
         external_id: external_id,
         bag_path: bag_path,
         src_path: src_path
