@@ -2,6 +2,7 @@
 
 require "spec_helper"
 require "chipmunk/bagger_cli"
+require "chipmunk/bagger/bentley_audio"
 
 RSpec.describe Chipmunk::BaggerCLI do
   describe "#initialize" do
@@ -48,6 +49,19 @@ RSpec.describe Chipmunk::BaggerCLI do
                                   "--metadata-type", "MARC",
                                   "--metadata-path", "/somewhere/whatever.xml",
                                   "--metadata-url", "http://foo.bar/whatever.xml"]).bagger).to be_a_kind_of(Chipmunk::Bagger::AudioLocalMetadata)
+    end
+
+    it "makes a bentleyaudio bagger with local metadata" do
+      expect(described_class.new(["bentleyaudio", "foo", "-s", "foo", "bar",
+                                  "--metadata-type", "MARC",
+                                  "--metadata-path", "/somewhere/whatever.xml",
+                                  "--metadata-url", "http://foo.bar/whatever.xml"]).bagger).to be_a_kind_of(Chipmunk::Bagger::BentleyAudio)
+    end
+
+    it "requires metadata params for Bentley Audio" do
+      expect {
+        described_class.new(["bentleyaudio", "foo", "-s", "foo", "bar"])
+      }.to raise_error(/require/)
     end
   end
 

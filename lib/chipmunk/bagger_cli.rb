@@ -37,6 +37,8 @@ module Chipmunk
       case content_type
       when "audio"
         params[:metadata_path] ? Chipmunk::Bagger::AudioLocalMetadata : Chipmunk::Bagger::Audio
+      when "bentleyaudio"
+        Chipmunk::Bagger::BentleyAudio
       when "digital"
         Chipmunk::Bagger::Digital
       when "video"
@@ -73,6 +75,13 @@ module Chipmunk
       raise ArgumentError, usage if args.size != 3
 
       (@content_type, @external_id, @bag_path) = args
+
+      raise ArgumentError, "All metadata options are required for bentleyaudio. \n\n#{usage}" if bad_bentley_args
+    end
+
+    def bad_bentley_args
+      content_type == "bentleyaudio" &&
+        !([:metadata_type, :metadata_path, :metadata_url].all? {|key| params.key?(key) })
     end
 
   end

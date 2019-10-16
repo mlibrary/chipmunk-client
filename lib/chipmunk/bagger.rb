@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "find"
 require "securerandom"
 require "chipmunk/bag"
 require "chipmunk/check/bag_exists"

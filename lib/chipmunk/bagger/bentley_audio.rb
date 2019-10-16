@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-require "chipmunk/metadata_error"
 require "chipmunk/bagger"
 
 module Chipmunk
-  class Bagger::AudioLocalMetadata < Bagger
+  class Bagger::BentleyAudio < Bagger
     def initialize(external_id:, bag_path:, src_path: nil, metadata_url:, metadata_type:, metadata_path:)
       super(
-        content_type: "audio",
+        content_type: "bentleyaudio",
         external_id: external_id,
         bag_path: bag_path,
         src_path: src_path
