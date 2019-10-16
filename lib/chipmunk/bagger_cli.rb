@@ -36,7 +36,7 @@ module Chipmunk
 
     def class_for(content_type)
       case content_type
-      when "audio"
+      when /^(bentley)?audio$/
         params[:metadata_path] ? Chipmunk::Bagger::AudioLocalMetadata : Chipmunk::Bagger::Audio
       when "digital"
         Chipmunk::Bagger::Digital
