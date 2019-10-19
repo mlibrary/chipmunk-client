@@ -27,15 +27,16 @@ module Chipmunk
     attr_reader :content_type, :external_id, :src_path, :bag_path, :params
 
     def make_bagger
-      class_for(content_type).new(external_id: external_id,
-                                   src_path: src_path,
-                                   bag_path: bag_path,
-                                   **params)
+      class_for(content_type).new(content_type: content_type,
+				  external_id: external_id,
+                                  src_path: src_path,
+                                  bag_path: bag_path,
+                                  **params)
     end
 
     def class_for(content_type)
       case content_type
-      when "audio"
+      when /^(bentley)?audio$/
         params[:metadata_path] ? Chipmunk::Bagger::AudioLocalMetadata : Chipmunk::Bagger::Audio
       when "digital"
         Chipmunk::Bagger::Digital

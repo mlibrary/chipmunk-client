@@ -12,6 +12,7 @@ RSpec.describe Chipmunk::Bagger::Video do
   let(:bag_data) { File.join(@bag_path, "data") }
   let(:bagger) do
     described_class.new(
+      content_type: 'video',
       external_id: external_id,
       src_path: @src_path,
       bag_path: @bag_path

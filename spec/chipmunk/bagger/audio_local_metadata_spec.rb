@@ -34,7 +34,7 @@ RSpec.describe Chipmunk::Bagger::AudioLocalMetadata do
           ["am000001.wav", "pm000001.wav", "mets.xml"].each do |file|
             it "moves #{file} to the data dir" do
               expect(bag).to receive(:add_file_by_moving).with(file, File.join(@src_path, file))
-              make_bag("audio_local_metadata", **params)
+              make_bag("audio", **params)
             end
           end
         end
@@ -49,12 +49,25 @@ RSpec.describe Chipmunk::Bagger::AudioLocalMetadata do
             "Metadata-Tagfile" => "ead.xml"
           )
 
-          make_bag("audio_local_metadata", **params)
+          make_bag("audio", **params)
         end
+
+	it "can pass through a variant content type" do
+          expect(bag).to receive(:write_chipmunk_info).with(
+            "External-Identifier" => external_id,
+            "Chipmunk-Content-Type" => "variantaudio",
+            "Bag-ID" => fake_uuid,
+            "Metadata-URL" => ead_url,
+            "Metadata-Type" => "EAD",
+            "Metadata-Tagfile" => "ead.xml"
+          )
+
+          make_bag("variantaudio", **params)
+	end
 
         it "copies the metadata" do
           expect(bag).to receive(:add_tag_file).with("ead.xml", fixture("ead.xml"))
-          make_bag("audio_local_metadata", **params)
+          make_bag("audio", **params)
         end
       end
     end

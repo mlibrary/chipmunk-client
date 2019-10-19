@@ -6,9 +6,9 @@ require "chipmunk/bag"
 module Chipmunk
   class Bagger::Digital < Bagger
 
-    def initialize(external_id:, bag_path:, src_path: nil)
+    def initialize(content_type:, external_id:, bag_path:, src_path: nil)
       super(
-        content_type: "digital",
+        content_type: content_type,
         external_id: external_id,
         bag_path: bag_path,
         src_path: src_path

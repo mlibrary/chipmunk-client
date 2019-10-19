@@ -49,6 +49,13 @@ RSpec.describe Chipmunk::BaggerCLI do
                                   "--metadata-path", "/somewhere/whatever.xml",
                                   "--metadata-url", "http://foo.bar/whatever.xml"]).bagger).to be_a_kind_of(Chipmunk::Bagger::AudioLocalMetadata)
     end
+
+    it "can make an audio bagger with local metadata using the bentleyaudio content type" do
+      expect(described_class.new(["bentleyaudio", "foo", "-s", "foo", "bar",
+                                  "--metadata-type", "MARC",
+                                  "--metadata-path", "/somewhere/whatever.xml",
+                                  "--metadata-url", "http://foo.bar/whatever.xml"]).bagger).to be_a_kind_of(Chipmunk::Bagger::AudioLocalMetadata)
+    end
   end
 
   describe "#run" do

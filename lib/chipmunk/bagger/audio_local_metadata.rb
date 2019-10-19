@@ -6,9 +6,9 @@ require "chipmunk/bagger"
 
 module Chipmunk
   class Bagger::AudioLocalMetadata < Bagger
-    def initialize(external_id:, bag_path:, src_path: nil, metadata_url:, metadata_type:, metadata_path:)
+    def initialize(content_type:, external_id:, bag_path:, src_path: nil, metadata_url:, metadata_type:, metadata_path:)
       super(
-        content_type: "video",
+        content_type: content_type,
         external_id: external_id,
         bag_path: bag_path,
         src_path: src_path
@@ -23,7 +23,7 @@ module Chipmunk
     def make_bag
       move_files_to_bag
       bag.add_tag_file(metadata_target_file, metadata_path)
-      bag.write_chipmunk_info(common_tags.merge(audio_metadata))
+      bag.write_chipmunk_info(common_tags.merge(local_metadata))
       bag.manifest!
     end
 
@@ -31,15 +31,11 @@ module Chipmunk
 
     attr_reader :metadata_url, :metadata_type, :metadata_path
 
-    def common_tags
-      super.merge("Chipmunk-Content-Type" => "audio")
-    end
-
     def metadata_target_file
       "#{@metadata_type.downcase}.xml"
     end
 
-    def audio_metadata
+    def local_metadata
       { "Metadata-URL"     => metadata_url,
         "Metadata-Type"    => metadata_type,
         "Metadata-Tagfile" => metadata_target_file }
