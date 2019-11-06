@@ -8,7 +8,8 @@ module Chipmunk
 
     def upload(dest)
       raise "rsync failed" unless
-      system("rsync", "-rtvzP", "--delete", "#{bag_path}/", dest)
+      system("rsync", "-rtvzP", "--delete", "--no-group",
+             "--perms", "--chmod=ug=rwX,o=", "#{bag_path}/", dest)
     end
 
     private
