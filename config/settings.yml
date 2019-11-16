@@ -1,4 +1,4 @@
-url: http://localhost:3000
+url: <%= ENV["CHIPMUNK_API_URL"] || "http://localhost:3000" %>
 api_key: <%= ENV["CHIPMUNK_API_KEY"] %>
 # Set to true to validate bag prior to upload. Useful for small bags or
 # pre-existing bags, not so useful for bags we just created with makebag,
