@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ -z "$1" ]]; then
+  echo "Usage: batch-upload <directory> [additional_directory...]"
+  exit 1
+fi
+
+if [[ -n "$CHIPMUNK_HOME" ]]; then
+  if [[ -x "$CHIPMUNK_HOME/bin/upload" ]]; then
+    UPLOAD="$CHIPMUNK_HOME/bin/upload"
+  else
+    echo "If CHIPMUNK_HOME is set, it must point to a chipmunk-client directory with bin/upload in it."
+    exit 1
+  fi
+elif [[ ! $(which upload) ]]; then
+  echo "The chipmunk-client bin directory (with makebag and upload) must be on the PATH or you must set CHIPMUNK_HOME to the client directory."
+  exit 1
+else
+  UPLOAD=$(which upload)
+fi
+
+if [[ -z "$CHIPMUNK_LOGS" ]]; then
+  echo "You must set CHIPMUNK_LOGS to a directory that is writeable for log files."
+  exit 1
+fi
+
+mkdir -p "$CHIPMUNK_LOGS"
+
+LOGFILE="$CHIPMUNK_LOGS/upload-$(date +"%Y%m%d%H%M%S").log"
+
+echo "Uploading batch of bags..."
+echo "Logging to: $LOGFILE"
+echo "----"
+
+$UPLOAD "$@" 2>&1 | tee -a $LOGFILE
