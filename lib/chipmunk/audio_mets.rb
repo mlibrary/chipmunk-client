@@ -7,16 +7,18 @@ module Chipmunk
   class AudioMETS
 
     CATALOG_URL_PREFIX = "mirlyn.lib.umich.edu/Record/"
+    SEARCH_URL_PREFIX = "search.lib.umich.edu/catalog/record/"
 
     def initialize(filehandle)
       @doc = Nokogiri::XML(filehandle)
     end
 
     def marcxml_url
-      if (match = mirlyn_url.match(/(#{CATALOG_URL_PREFIX}\d{9})/))
-        "https://#{match[0]}.xml"
+      if (match = mirlyn_url.match(/(#{CATALOG_URL_PREFIX}|#{SEARCH_URL_PREFIX})(\d{9})/))
+        "https://#{CATALOG_URL_PREFIX}#{match[2]}.xml"
       else
-        raise MetadataError, "URL #{mirlyn_url} does not match #{CATALOG_URL_PREFIX}RECORDNUM"
+        raise MetadataError,
+          "URL #{mirlyn_url} does not match #{CATALOG_URL_PREFIX}RECORDNUM or #{SEARCH_URL_PREFIX}RECORDNUM"
       end
     end
 
