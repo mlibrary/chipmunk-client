@@ -19,6 +19,13 @@ RSpec.describe Chipmunk::AudioMETS do
       end
     end
 
+    context "when mets.xml links to a 'search' catalog record" do
+      let(:mets_path) { fixture("audio", "mets-search.xml") }
+      it "resolves to a mirlyn URL for marcxml" do
+        expect(subject).to match(/^https:\/\/mirlyn.lib.umich.edu\/.*\.xml/)
+      end
+    end
+
     context "when MARC link isn't to mirlyn" do
       let(:mets_path) { fixture("audio", "mets-nonmirlyn.xml") }
       it do
