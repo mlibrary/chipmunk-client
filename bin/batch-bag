@@ -36,14 +36,14 @@ echo "Logging to: $LOGFILE"
 echo "----"
 
 for file in "$@"; do
-  barcode=$(basename $file)
-  directory=$(dirname $file)
-  output=$directory/bagged/$(basename $file)
+  barcode=$(basename "$file")
+  directory=$(dirname "$file")
+  output=$directory/bagged/$(basename "$file")
   if [[ ! $barcode =~ ^39015.* ]]; then
     echo "Skipping apparent non-barcode $barcode";
     continue
   fi
-  mkdir -p $directory/bagged
+  mkdir -p "$directory"/bagged
   echo "Bagging $barcode to $output"
-  $MAKEBAG -s $file $CONTENT_TYPE $barcode $output 2>&1 | tee -a $LOGFILE
+  "$MAKEBAG" -s "$file" $CONTENT_TYPE $barcode "$output" 2>&1 | tee -a "$LOGFILE"
 done
