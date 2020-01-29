@@ -4,7 +4,7 @@ GEM
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
     ast (2.4.0)
-    bagit (0.4.3)
+    bagit (0.4.1)
       docopt (~> 0.5.0)
       validatable (~> 1.6)
     byebug (11.0.1)
@@ -96,7 +96,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bagit
+  bagit (= 0.4.1)
   byebug
   ettin
   fabrication
@@ -111,4 +111,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

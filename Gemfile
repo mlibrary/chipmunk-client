@@ -7,7 +7,7 @@
 
 source "https://rubygems.org"
 
-gem "bagit"
+gem "bagit", "= 0.4.1"
 gem "ettin"
 gem "nokogiri"
 gem "rest-client"
