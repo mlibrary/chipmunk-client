@@ -4,6 +4,7 @@ require "securerandom"
 require "chipmunk/bag"
 require "chipmunk/check/bag_exists"
 require "chipmunk/check/chipmunk_info"
+require "chipmunk/check/os_metadata"
 
 module Chipmunk
   class Bagger
@@ -47,6 +48,7 @@ module Chipmunk
     def checks
       [
         Check::ChipmunkInfo.new(self),
+        Check::OsMetadata.new(self),
         Check::BagExists.new(self)
       ]
     end
