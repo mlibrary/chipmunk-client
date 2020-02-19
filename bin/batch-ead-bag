@@ -12,11 +12,11 @@ if [[ -n "$CHIPMUNK_HOME" ]]; then
     echo "If CHIPMUNK_HOME is set, it must point to a chipmunk-client directory with bin/makebag in it."
     exit 1
   fi
-elif [[ ! $(which makebag) ]]; then
+elif [[ ! "$(which makebag)" ]]; then
   echo "The chipmunk-client bin directory (with makebag and upload) must be on the PATH or you must set CHIPMUNK_HOME to the client directory."
   exit 1
 else
-  MAKEBAG=$(which makebag)
+  MAKEBAG="$(which makebag)"
 fi
 
 if [[ -z "$CHIPMUNK_LOGS" ]]; then
@@ -41,9 +41,9 @@ echo "Logging to: $LOGFILE"
 echo "----"
 
 for file in "$@"; do
-  barcode=$(basename "$file")
-  directory=$(dirname "$file")
-  output=$directory/bagged/$(basename "$file")
+  barcode="$(basename "$file")"
+  directory="$(dirname "$file")"
+  output="$directory/bagged/$(basename "$file")"
   if [[ ! $barcode =~ ^39015.* ]]; then
     echo "Skipping apparent non-barcode $barcode";
     continue
