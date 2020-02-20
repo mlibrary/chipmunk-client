@@ -127,6 +127,10 @@ module Chipmunk
       end
     end
 
+    def time_format(date)
+      date.strftime(TIME_FORMAT)
+    end
+
     def external_id
       request_params[:external_id]
     end
