@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "date"
 require "bagit"
 require "rest-client"
 require "json"
@@ -9,6 +10,9 @@ require "chipmunk/bag_rsyncer"
 
 module Chipmunk
   class Uploader
+    SEC_PER_DAY = 60*60*24
+    TIME_FORMAT = "%Y-%m-%d %I:%M:%S %p"
+
     def initialize(bag_path, client:, rsyncer: BagRsyncer.new(bag_path), config:)
       @config = config
       bag_path = bag_path.chomp("/")
@@ -34,6 +38,7 @@ module Chipmunk
     end
 
     def print_result_when_done
+      puts "#{time_format(DateTime.now)} - Waiting for bag (#{bag_id} / #{external_id}) to be processed..."
       print_result(wait_for_bag) unless qitem.nil?
     rescue ClientError => e
       puts e.to_s
@@ -107,11 +112,17 @@ module Chipmunk
 
     def wait_for_bag
       result = qitem
+      started = DateTime.now
+      ticks = 0
       loop do
         # update qitem
         return result if result["status"] != "PENDING"
-        puts "Waiting for queue item to be processed"
-        sleep 1
+        ticks += 1
+        sleep 5
+        if ticks == 12
+          ticks = 0
+          puts "#{time_format(DateTime.now)} - Still waiting on bag (#{external_id} / #{bag_id}), started at #{time_format(started)}"
+        end
         result = client.get("/v1/queue/#{qitem["id"]}")
       end
     end
