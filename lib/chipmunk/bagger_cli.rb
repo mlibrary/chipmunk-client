@@ -41,7 +41,7 @@ module Chipmunk
       when "digital"
         Chipmunk::Bagger::Digital
       when "video"
-        Chipmunk::Bagger::Video
+        params[:metadata_path] ? Chipmunk::Bagger::VideoLocalMetadata : Chipmunk::Bagger::Video
       else
         raise ArgumentError, "No processor for content type #{content_type}"
       end

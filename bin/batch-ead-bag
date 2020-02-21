@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z "$4" ]]; then
-  echo "Usage: batch-ead-bag <audio> <EAD file> <EAD URL> <directory> [additional_directory...]"
+  echo "Usage: batch-ead-bag <audio|video> <EAD file> <EAD URL> <directory> [additional_directory...]"
   exit 1
 fi
 

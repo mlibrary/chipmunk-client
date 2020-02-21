@@ -27,6 +27,7 @@ RSpec.describe Chipmunk::Bagger::Video do
         "Chipmunk::Check::BagExists",
         "Chipmunk::Check::Video",
         "Chipmunk::Check::ChipmunkInfo",
+        "Chipmunk::Check::OsMetadata",
       )
     end
   end
