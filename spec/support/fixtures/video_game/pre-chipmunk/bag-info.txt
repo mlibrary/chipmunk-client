@@ -1,0 +1,17 @@
+Profile Name: UMICH-CVGA-Disk-Imaging
+BIB/System Number: 011704904
+BarcodeNumber/Identifier: B5519735
+GameTitle: Amnesia: The Dark Descent
+GameSystem: PC
+GameRegion: NTSC-U (North and South America, etc.)
+Type: Virtual game
+PhysicalGameMediaFormat: 
+VirtualGameEdition: Steam
+GameNotes: 
+Hardware: 
+Software: 
+ImagingNotes: 
+BagCreatorName: Val Waldron
+Payload-Oxum: 22.1
+Bagging-Date: 2021-02-19
+Bag-Size: 0.7 KB
