@@ -61,3 +61,11 @@ def make_bag(content_type, **kwargs)
                       src_path: @src_path,
                       bag_path: @bag_path, **kwargs).make_bag
 end
+
+def squelch_stdout(&block)
+  stdout = $stdout
+  $stdout = File.open(File::NULL, "w")
+  block.call
+ensure
+  $stdout = stdout
+end

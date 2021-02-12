@@ -76,14 +76,11 @@ RSpec.describe Chipmunk::Bagger do
       end
 
       it 'raises the error we gave it' do
-        expect{ bagger.run }.to raise_error('injected error')
+        expect { bagger.run }.to output.to_stderr.and raise_error('injected error')
       end
 
       it "warns the user that it couldn't move the files" do
-        expect do
-          bagger.run
-        rescue
-        end.to output(/#{destination}/).to_stderr
+        expect { bagger.run }.to raise_error.and output(/#{destination}/).to_stderr
       end
     end
   end

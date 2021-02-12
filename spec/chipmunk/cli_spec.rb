@@ -24,6 +24,15 @@ RSpec.describe Chipmunk::CLI do
   end
 
   describe "#run" do
+    before(:each) do
+      @stdout = $stdout
+      $stdout = File.open(File::NULL, "w")
+    end
+
+    after(:each) do
+      $stdout = @stdout
+    end
+
     it "calls the uploader with each bag_path" do
       client = double(:client)
       client_factory = double(:client_factory, new: client)
