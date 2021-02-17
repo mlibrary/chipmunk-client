@@ -152,6 +152,12 @@ RSpec.describe Chipmunk::StatusCLI do
                                     .and_return(bag_hash)
       allow(client).to receive(:get).with(%r{^/v1/queue})
                                     .and_return(queue_array)
+      @stdout = $stdout
+      $stdout = File.open(File::NULL, "w")
+    end
+
+    after(:each) do
+      $stdout = @stdout
     end
 
     it "queries /v1/bags/id for each bag" do

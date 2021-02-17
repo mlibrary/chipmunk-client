@@ -8,12 +8,13 @@ describe Chipmunk::Uploader do
     instance_double(Chipmunk::Client)
   end
   let(:bag_id) { "14d25bcd-deaf-4c94-add7-c189fdca4692" }
+  let(:ext_id) { "test_ex_id_22" }
   let(:rsyncer) { instance_double(Chipmunk::BagRsyncer, upload: true) }
   let(:request) do
     # from spec/support/fixtures/test_bag
     {
       "bag_id"      => bag_id,
-      "external_id" => "test_ex_id_22",
+      "external_id" => ext_id,
       "upload_link" => "#{Faker::Internet.email}:/#{Faker::Lorem.word}/path/#{bag_id}"
     }
   end
@@ -46,7 +47,7 @@ describe Chipmunk::Uploader do
       describe "#upload" do
         it "uploads the bag" do
           expect(rsyncer).to receive(:upload).with(request["upload_link"])
-          subject.upload
+          squelch_stdout { subject.upload }
         end
 
         it "prints a success message" do
@@ -54,7 +55,7 @@ describe Chipmunk::Uploader do
         end
 
         it "returns true" do
-          expect(subject.upload).to be true
+          expect(squelch_stdout { subject.upload }).to be true
         end
       end
 
@@ -72,11 +73,11 @@ describe Chipmunk::Uploader do
       describe "#print_result_when_done" do
         context "before running #upload_without_waiting_for_result" do
           it "returns nil" do
-            expect(subject.print_result_when_done).to be nil
+            expect(squelch_stdout { subject.print_result_when_done }).to be nil
           end
 
-          it "doesn't write anything to stdout" do
-            expect{ subject.print_result_when_done }.not_to output.to_stdout
+          it "identifies the bag awaiting upload" do
+            expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
           end
         end
 
@@ -88,7 +89,7 @@ describe Chipmunk::Uploader do
           end
 
           it "returns true" do
-            expect(subject.print_result_when_done).to be true
+            expect(squelch_stdout { subject.print_result_when_done }).to be true
           end
         end
       end
@@ -109,7 +110,7 @@ describe Chipmunk::Uploader do
         end
 
         it "returns false" do
-          expect(subject.upload).to be false
+          expect(squelch_stdout { subject.upload }).to be false
         end
 
         it "formats the validation failure" do
@@ -131,11 +132,11 @@ describe Chipmunk::Uploader do
       describe "#print_result_when_done" do
         context "before running #upload_without_waiting_for_result" do
           it "returns nil" do
-            expect(subject.print_result_when_done).to be nil
+            expect(squelch_stdout { subject.print_result_when_done }).to be nil
           end
 
-          it "doesn't write anything to stdout" do
-            expect{ subject.print_result_when_done }.not_to output.to_stdout
+          it "identifies the bag awaiting upload" do
+            expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
           end
         end
 
@@ -147,7 +148,7 @@ describe Chipmunk::Uploader do
           end
 
           it "returns false" do
-            expect(subject.print_result_when_done).to be false
+            expect(squelch_stdout { subject.print_result_when_done }).to be false
           end
 
           it "formats the validation failure" do
@@ -173,7 +174,7 @@ describe Chipmunk::Uploader do
 
         it "does not upload the bag" do
           expect(rsyncer).not_to receive(:upload)
-          subject.upload
+          squelch_stdout { subject.upload }
         end
       end
 
@@ -184,30 +185,32 @@ describe Chipmunk::Uploader do
 
         it "does not upload the bag" do
           expect(rsyncer).not_to receive(:upload)
-          subject.upload_without_waiting_for_result
+          squelch_stdout { subject.upload_without_waiting_for_result }
         end
       end
 
       describe "#print_result_when_done" do
         context "before running #upload_without_waiting_for_result" do
           it "returns nil" do
-            expect(subject.print_result_when_done).to be nil
+            expect(squelch_stdout { subject.print_result_when_done }).to be nil
           end
 
-          it "doesn't write anything to stdout" do
-            expect{ subject.print_result_when_done }.not_to output.to_stdout
+          it "identifies the bag awaiting upload" do
+            expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
           end
         end
 
         context "after running #upload_without_waiting_for_result" do
-          before(:each) { subject.upload_without_waiting_for_result }
-
-          it "returns nil" do
-            expect(subject.print_result_when_done).to be nil
+          before(:each) do
+            squelch_stdout { subject.upload_without_waiting_for_result }
           end
 
-          it "doesn't write anything to stdout" do
-            expect{ subject.print_result_when_done }.not_to output.to_stdout
+          it "returns nil" do
+            expect(squelch_stdout { subject.print_result_when_done }).to be nil
+          end
+
+          it "identifies the bag awaiting upload" do
+            expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
           end
         end
       end
@@ -220,37 +223,37 @@ describe Chipmunk::Uploader do
     describe "#upload" do
       it "does not attempt to upload the bag" do
         expect(rsyncer).not_to receive(:upload)
-        subject.upload
+        expect { subject.upload }.to output(/been uploaded/).to_stdout
       end
     end
 
     describe "#upload_without_waiting_for_result" do
       it "does not attempt to upload the bag" do
         expect(rsyncer).not_to receive(:upload)
-        subject.upload_without_waiting_for_result
+        expect { subject.upload_without_waiting_for_result }.to output(/been uploaded/).to_stdout
       end
     end
 
     describe "#print_result_when_done" do
       context "before running #upload_without_waiting_for_result" do
         it "returns nil" do
-          expect(subject.print_result_when_done).to be nil
+          expect(squelch_stdout { subject.print_result_when_done }).to be nil
         end
 
-        it "doesn't write anything to stdout" do
-          expect{ subject.print_result_when_done }.not_to output.to_stdout
+        it "identifies the bag awaiting upload" do
+          expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
         end
       end
 
       context "after running #upload_without_waiting_for_result" do
-        before(:each) { subject.upload_without_waiting_for_result }
+        before(:each) { squelch_stdout { subject.upload_without_waiting_for_result } }
 
         it "returns nil" do
-          expect(subject.print_result_when_done).to be nil
+          expect(squelch_stdout { subject.print_result_when_done }).to be nil
         end
 
-        it "doesn't write anything to stdout" do
-          expect{ subject.print_result_when_done }.not_to output.to_stdout
+        it "identifies the bag awaiting upload" do
+          expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
         end
       end
     end
@@ -282,23 +285,23 @@ describe Chipmunk::Uploader do
     describe "#print_result_when_done" do
       context "before running #upload_without_waiting_for_result" do
         it "returns nil" do
-          expect(subject.print_result_when_done).to be nil
+          expect(squelch_stdout { subject.print_result_when_done }).to be nil
         end
 
-        it "doesn't write anything to stdout" do
-          expect{ subject.print_result_when_done }.not_to output.to_stdout
+        it "identifies the bag awaiting upload" do
+          expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
         end
       end
 
       context "after running #upload_without_waiting_for_result" do
-        before(:each) { subject.upload_without_waiting_for_result }
+        before(:each) { squelch_stdout { subject.upload_without_waiting_for_result } }
 
         it "returns nil" do
-          expect(subject.print_result_when_done).to be nil
+          expect(squelch_stdout { subject.print_result_when_done }).to be nil
         end
 
-        it "doesn't write anything to stdout" do
-          expect{ subject.print_result_when_done }.not_to output.to_stdout
+        it "identifies the bag awaiting upload" do
+          expect { subject.print_result_when_done }.to output(/Waiting.*#{bag_id} \/ #{ext_id}/).to_stdout
         end
       end
     end
