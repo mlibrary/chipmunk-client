@@ -13,6 +13,10 @@ RSpec.describe Chipmunk::BaggerCLI do
       expect(described_class.new(["digital", "foo", "/path/to/output"])).not_to be_nil
     end
 
+    it "accepts video_game w/o source path" do
+      expect(described_class.new(["video_game", "foo", "/path/to/output"])).not_to be_nil
+    end
+
     it "does not accept an undefined content type" do
       expect { described_class.new(["garbage", "foo", "/path/to/output"]) }.to raise_exception(ArgumentError)
     end
@@ -37,6 +41,10 @@ RSpec.describe Chipmunk::BaggerCLI do
 
     it "can make a digital bagger" do
       expect(described_class.new(["digital", "foo", "bar"]).bagger).to be_a(Chipmunk::Bagger::Digital)
+    end
+
+    it "can make a video_game bagger" do
+      expect(described_class.new(["video_game", "foo", "bar"]).bagger).to be_a(Chipmunk::Bagger::VideoGame)
     end
 
     it "can make a video bagger" do
@@ -66,8 +74,16 @@ RSpec.describe Chipmunk::BaggerCLI do
         .to raise_exception(RuntimeError, /won't overwrite/)
     end
 
-    it "calls check_bag and make_bag on the bagger" do
+    it "calls check_bag and make_bag (digital) on the bagger" do
       cli = described_class.new(["digital", "foo", "bar"])
+      expect(cli.bagger).to receive(:check_bag)
+      expect(cli.bagger).to receive(:make_bag)
+
+      cli.run
+    end
+
+    it "calls check_bag and make_bag (video_game) on the bagger" do
+      cli = described_class.new(["video_game", "foo", "bar"])
       expect(cli.bagger).to receive(:check_bag)
       expect(cli.bagger).to receive(:make_bag)
 

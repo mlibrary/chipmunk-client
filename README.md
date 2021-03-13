@@ -55,4 +55,12 @@ bin/makebag bentleyaudio <barcode> -s /path/to/content --metadata-type EAD --met
 
 ```
 bin/makebag digital barcode path_to_bag
+
+
+## Bagging Video Game Content
+
+`makebag video_game` will add chipmunk bagging information to an existing bag. The bag should follow the [UMICH video game  profile](https://github.com/mlibrary/chipmunk/tree/master/features/support)
+
+```
+bin/makebag video_game barcode path_to_bag
 ```

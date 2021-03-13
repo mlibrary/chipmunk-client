@@ -4,6 +4,7 @@ require "chipmunk/bagger"
 require "chipmunk/bagger/audio"
 require "chipmunk/bagger/audio_local_metadata"
 require "chipmunk/bagger/digital"
+require "chipmunk/bagger/video_game"
 require "chipmunk/bagger/video"
 require "optparse"
 
@@ -40,6 +41,8 @@ module Chipmunk
         params[:metadata_path] ? Chipmunk::Bagger::AudioLocalMetadata : Chipmunk::Bagger::Audio
       when "digital"
         Chipmunk::Bagger::Digital
+      when "video_game"
+        Chipmunk::Bagger::VideoGame
       when "video"
         params[:metadata_path] ? Chipmunk::Bagger::VideoLocalMetadata : Chipmunk::Bagger::Video
       else
