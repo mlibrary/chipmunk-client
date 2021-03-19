@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
+    "test": "mocha",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
@@ -12,12 +13,17 @@
   "author": "The Regents of...",
   "license": "BSD-3",
   "devDependencies": {
+    "@cucumber/cucumber": "^7.0.0",
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^12.0.1"
+    "@wdio/sync": "^7.2.1",
+    "chai": "^4.3.4",
+    "electron": "^12.0.1",
+    "mocha": "^8.3.2",
+    "spectron": "^14.0.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
