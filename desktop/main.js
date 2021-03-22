@@ -1,6 +1,11 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
+require('electron-reload')(__dirname, {
+  electron: require('electron'),
+  awaitWriteFinish: true,
+});
+
 function createWindow () {
   const win = new BrowserWindow({
     width: 800,
@@ -10,7 +15,7 @@ function createWindow () {
     }
   })
 
-  win.loadFile('index.html')
+  win.loadFile('public/index.html')
 }
 
 app.whenReady().then(() => {
