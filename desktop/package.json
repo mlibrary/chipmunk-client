@@ -30,7 +30,7 @@
     "chai": "^4.3.4",
     "concurrently": "^6.0.0",
     "electron": "^12.0.1",
-    "electron-reload": "^1.5.0",
+    "electron-reloader": "^1.2.0",
     "mocha": "^8.3.2",
     "rollup": "^2.42.3",
     "rollup-plugin-css-only": "^3.1.0",
@@ -42,7 +42,10 @@
     "svelte": "^3.35.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "@umich-lib/components": "^1.0.8",
+    "@umich-lib/css": "^1.0.9-dev.64",
+    "electron-squirrel-startup": "^1.0.0",
+    "numl": "^1.0.0-beta.25"
   },
   "config": {
     "forge": {

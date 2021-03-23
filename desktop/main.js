@@ -1,10 +1,10 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
-require('electron-reload')(__dirname, {
-  electron: require('electron'),
-  awaitWriteFinish: true,
-});
+try {
+  require('electron-reloader')(module);
+} catch {}
+
 
 function createWindow () {
   const win = new BrowserWindow({
