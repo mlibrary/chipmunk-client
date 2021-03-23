@@ -3,7 +3,7 @@ Feature: We can add tests
 
   Scenario: Running tests
     When I run the tests
-    Then the application title is "Hello World!"
+    Then the application title is "BDD Skeleton"
 
   Scenario: Getting text
     When I run the tests
