@@ -13,9 +13,7 @@ Feature: Packaging artifacts
 
   Scenario: Packaging one digital artifact
     Given I have a directory of floppy disc images from a researcher's personal collection
-    When I set the content type to "digital"
-    And I select that directory for packaging
-    And I package the directory
+    When I package the directory as "digital"
     Then I have the Dark Blue SIP for my artifact
 
   Scenario: packaging one million videos

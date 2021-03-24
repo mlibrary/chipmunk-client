@@ -1,74 +1,62 @@
-const { Given, When, Then } = require("@cucumber/cucumber");
+const { Before, Given, When, Then } = require("@cucumber/cucumber");
 const expect = require("chai").expect;
-
-// makebag -s content/123 digital 123 bagged/123 2>&1 | tee -a "$LOGFILE"
-
-class Artifact {
-  constructor() {
-    this._is_bagged = false;
-    this._raw_path = '/path/to/raw';
-    this._bagged_path = null;
-    this._content_type = ???;
-  }
-}
 
 class RawArtifact {
 }
 
-class BaggedArtifact {
-  constructor(rawArtifact) {
-    this._rawArtifact = rawArtifact;
+class Package {
+  constructor(contentTypeId, rawArtifact) {
+    this._content_type_id = contentTypeId;
+    this._artifact = rawArtifact;
+  }
+
+  get contentTypeId() {
+    return this._content_type_id;
+  }
+
+  get artifact() {
+    return this._artifact;
   }
 }
 
-class Directory {
+class Setup {
+  aRawDigitalArtifact() {
+    return new RawArtifact();
+  }
+}
+
+class UI {
   constructor() {
-    this._isValidSIP = false;
+    this._packages = [];
   }
 
-  get isValidSIP() {
-    return this._isValidSIP;
-  }
-
-  youAreNowASIP() {
-    this._isValidSIP = true;
-  }
-}
-
-class Packager {
-  constructor(contentTypeId) {
-  }
-
-  select(directories) {
-    this._directories = directories;
-  }
-
-  run() {
-    this._directories.forEach(directory => {
-      directory.youAreNowASIP();
+  packageArtifacts(contentTypeId, artifacts) {
+    artifacts.forEach(artifact => {
+      this._packages.push(new Package(contentTypeId, artifact));
     });
   }
+
+  get packages() {
+    return this._packages;
+  }
 }
 
+Before(function() {
+  this.setup = new Setup();
+  this.ui = new UI();
+});
+
 Given('I have a directory of floppy disc images from a researcher\'s personal collection', function () {
-  this.myArtifacts = [new RawArtifact()];
-  this.myDirectory = new Directory();
-  expect(this.myDirectory.bagFormat).to.equal('none');
+  this.artifact = this.setup.aRawDigitalArtifact();
+  this.contentTypeId = 'digital';
 });
 
-When('I set the content type to {string}', function (contentTypeId) {
-  this.packager = new Packager(contentTypeId);
-});
-
-When('I select that directory for packaging', function () {
-  this.packager.select([this.myDirectory]);
-});
-
-When('I package the directory', function () {
-  this.packager.run();
+When('I package the directory as {string}', function (contentTypeId) {
+  this.ui.packageArtifacts(contentTypeId, [this.artifact]);
 });
 
 Then('I have the Dark Blue SIP for my artifact', function () {
-  expect(this.myDirectory.bagFormat).to.equal(this.packager.contentTypeId);
-  expect(this.myDirectory.isValidSIP).to.equal(true);
+  expect(this.ui.packages).to.have.length(1);
+  expect(this.ui.packages[0].contentTypeId).to.equal(this.contentTypeId);
+  expect(this.ui.packages[0].artifact).to.equal(this.artifact);
 });
