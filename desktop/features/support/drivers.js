@@ -22,10 +22,6 @@ class UI {
     });
   }
 
-  get packages() {
-    return this._packages;
-  }
-
   async selectArtifacts(artifacts) {
     let el = await this._browser.$('#artifact-list');
     await el.setValue(artifacts.join("\n"));
@@ -39,6 +35,18 @@ class UI {
   async startPackaging() {
     let el = await this._browser.$('#start-packaging');
     await el.click();
+  }
+
+  async getPackages() {
+    let list = await this._browser.$('#package-list');
+    let items = await list.$$(function() {
+      return this.querySelectorAll('li');
+    });
+
+    return this._packages;
+  }
+
+  async getPackage(packageEl) {
   }
 }
 
