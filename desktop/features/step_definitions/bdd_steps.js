@@ -15,5 +15,5 @@ Then('I have the Dark Blue SIP for my artifact', async function () {
 
   expect(packages).to.have.length(1);
   expect(packages[0].contentTypeId).to.equal(this.contentTypeId);
-  expect(packages[0].artifact).to.equal(this.artifact);
+  expect(packages[0].artifact.location).to.equal(this.artifact.location);
 });

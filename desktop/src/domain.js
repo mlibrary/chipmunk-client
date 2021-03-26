@@ -1,4 +1,11 @@
 class RawArtifact {
+  constructor(location) {
+    this._location = location;
+  }
+
+  get location() {
+    return this._location;
+  }
 }
 
 class Package {

@@ -1,9 +1,13 @@
 <script>
+import { RawArtifact, Package } from './domain';
+
 let items = [];
 let selectedArtifacts;
 
 function startPackaging() {
-  items = [selectedArtifacts];
+  items = selectedArtifacts.split("\n").map(location => {
+    return new RawArtifact(location);
+  });
 }
 </script>
 
@@ -20,11 +24,13 @@ function startPackaging() {
     <input id="content-type" type="text" name="content-type">
   </label>
 
-  <button id="start-packaging" on:click={startPackaging} class="button">Start Packaging</button>
+  <button id="start-packaging" on:click|preventDefault={startPackaging} class="button">Start Packaging</button>
 </form>
+
+<pre>items: {items}</pre>
 
 <ul id="package-list">
 {#each items as item}
-  <li>{item}</li>
+  <li>{item.location}</li>
 {/each}
 </ul>
