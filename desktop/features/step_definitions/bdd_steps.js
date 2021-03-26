@@ -1,51 +1,6 @@
 const { Before, Given, When, Then } = require("@cucumber/cucumber");
 const expect = require("chai").expect;
 
-class RawArtifact {
-}
-
-class Package {
-  constructor(contentTypeId, rawArtifact) {
-    this._content_type_id = contentTypeId;
-    this._artifact = rawArtifact;
-  }
-
-  get contentTypeId() {
-    return this._content_type_id;
-  }
-
-  get artifact() {
-    return this._artifact;
-  }
-}
-
-class Setup {
-  aRawDigitalArtifact() {
-    return new RawArtifact();
-  }
-}
-
-class UI {
-  constructor() {
-    this._packages = [];
-  }
-
-  packageArtifacts(contentTypeId, artifacts) {
-    artifacts.forEach(artifact => {
-      this._packages.push(new Package(contentTypeId, artifact));
-    });
-  }
-
-  get packages() {
-    return this._packages;
-  }
-}
-
-Before(function() {
-  this.setup = new Setup();
-  this.ui = new UI();
-});
-
 Given('I have a directory of floppy disc images from a researcher\'s personal collection', function () {
   this.artifact = this.setup.aRawDigitalArtifact();
   this.contentTypeId = 'digital';
