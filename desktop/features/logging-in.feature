@@ -8,7 +8,7 @@ Feature: Logging in
   Background:
     Given I am running DBC on my workstation
 
-  Scenario:
+# Scenario:
 #   Given I know my key
 #   When I enter my key
 #   Then I can see that I am logged in

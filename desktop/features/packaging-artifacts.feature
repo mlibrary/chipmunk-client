@@ -1,3 +1,4 @@
+@ui
 Feature: Packaging artifacts
 
   In order to preserve digital artifacts
@@ -16,5 +17,5 @@ Feature: Packaging artifacts
     When I package the directory as "digital"
     Then I have the Dark Blue SIP for my artifact
 
-  Scenario: packaging one million videos
-  Scenario: packaging a gigantic file
+  #Scenario: packaging one million videos
+  #Scenario: packaging a gigantic file

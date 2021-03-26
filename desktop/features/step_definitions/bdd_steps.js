@@ -6,8 +6,8 @@ Given('I have a directory of floppy disc images from a researcher\'s personal co
   this.contentTypeId = 'digital';
 });
 
-When('I package the directory as {string}', function (contentTypeId) {
-  this.ui.packageArtifacts(contentTypeId, [this.artifact]);
+When('I package the directory as {string}', async function (contentTypeId) {
+  await this.ui.packageArtifacts(contentTypeId, [this.artifact]);
 });
 
 Then('I have the Dark Blue SIP for my artifact', function () {
