@@ -1,8 +1,8 @@
 const { Before, Given, When, Then } = require("@cucumber/cucumber");
 const expect = require("chai").expect;
 
-Given('I have a directory of floppy disc images from a researcher\'s personal collection', function () {
-  this.artifact = this.setup.aRawDigitalArtifact();
+Given('I have a directory of floppy disc images from a researcher\'s personal collection', async function () {
+  this.artifact = await this.setup.aRawDigitalArtifact();
   this.contentTypeId = 'digital';
 });
 

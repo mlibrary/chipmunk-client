@@ -1,8 +1,59 @@
-const { RawArtifact } = require("../../src/domain");
+const path = require("path");
+const fse = require("fs-extra");
+const os = require("os");
 
 class Setup {
-  aRawDigitalArtifact() {
-    return new RawArtifact('garbage');
+  constructor(filesystem) {
+    this._filesystem = filesystem;
+  }
+
+  async aRawDigitalArtifact() {
+    return { location: await this.setupFixture('digital') };
+  }
+
+  // Private methods:
+
+  async setupFixture(name) {
+    return await this._filesystem.setupFullWorkspace(this.fixturePath(name));
+  }
+
+  fixturePath(name) {
+    const fixturesDir = path.join(__dirname, '../../../spec/support/fixtures');
+
+    if (name === 'digital')
+      return path.join(fixturesDir, 'digital/pre-chipmunk');
+    else
+      throw `Unavailable fixture: ${name}`;
+  }
+}
+
+class Filesystem {
+  constructor(teardownSteps) {
+    this._teardown_steps = teardownSteps;
+  }
+
+  addTeardownStep(callback) {
+    this._teardown_steps.push(callback);
+  }
+
+  async setupFullWorkspace(src) {
+    let tmp = await this.setupEmptyWorkspace();
+    await this.copyContents(src, tmp);
+    return tmp;
+  }
+
+  async setupEmptyWorkspace() {
+    let tmpDir = await fse.mkdtemp(path.join(os.tmpdir(), 'chpmnk-'));
+    this.addTeardownStep(async () => {
+      await fse.remove(tmpDir, { recursive: true });
+    });
+    return tmpDir;
+  }
+
+  // This copies the contents of the source directory into an
+  // already-existing destination directory.
+  async copyContents(sourceDirectory, destinationDirectory) {
+    await fse.copy(sourceDirectory, destinationDirectory);
   }
 }
 
@@ -57,4 +108,5 @@ class UI {
 }
 
 exports.Setup = Setup;
+exports.Filesystem = Filesystem;
 exports.UI = UI;
