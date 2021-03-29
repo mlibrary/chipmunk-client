@@ -23,5 +23,12 @@ class Package {
   }
 }
 
+function packageArtifactLocations(contentTypeId, artifactLocations, callback) {
+  callback(artifactLocations.map(location => {
+    return new Package(contentTypeId, new RawArtifact(location));
+  }));
+}
+
 exports.RawArtifact = RawArtifact;
 exports.Package = Package;
+exports.packageArtifactLocations = packageArtifactLocations;

@@ -1,14 +1,18 @@
 <script>
-import { RawArtifact, Package } from './domain';
+import { packageArtifactLocations } from './domain';
 
 let items = [];
-let selectedArtifacts;
+let artifactLocations;
 let contentType;
 
 function startPackaging() {
-  items = selectedArtifacts.split("\n").map(location => {
-    return new Package(contentType, new RawArtifact(location));
+  packageArtifactLocations(contentType, getArtifactLocations(), packages => {
+    items = packages;
   });
+}
+
+function getArtifactLocations() {
+  return artifactLocations.split("\n");
 }
 </script>
 
@@ -17,7 +21,7 @@ function startPackaging() {
 <form>
   <label>
     <span>Artifacts</span>
-    <textarea id="artifact-list" name="artifact-list" bind:value={selectedArtifacts}/>
+    <textarea id="artifact-list" name="artifact-list" bind:value={artifactLocations}/>
   </label>
 
   <label>
