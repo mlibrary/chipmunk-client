@@ -29,6 +29,4 @@ function packageArtifactLocations(contentTypeId, artifactLocations, callback) {
   }));
 }
 
-exports.RawArtifact = RawArtifact;
-exports.Package = Package;
 exports.packageArtifactLocations = packageArtifactLocations;
