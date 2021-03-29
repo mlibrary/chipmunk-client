@@ -2,29 +2,24 @@ const { RawArtifact, Package } = require("../../src/domain");
 
 class Setup {
   aRawDigitalArtifact() {
-    return new RawArtifact();
+    return new RawArtifact('garbage');
   }
 }
 
 class UI {
   constructor(browser) {
     this._browser = browser;
-    this._packages = [];
   }
 
   async packageArtifacts(contentTypeId, artifacts) {
     await this.selectArtifacts(artifacts);
     await this.selectContentType(contentTypeId);
     await this.startPackaging();
-
-    artifacts.forEach(artifact => {
-      this._packages.push(new Package(contentTypeId, artifact));
-    });
   }
 
   async selectArtifacts(artifacts) {
     let el = await this._browser.$('#artifact-list');
-    await el.setValue(artifacts.join("\n"));
+    await el.setValue(artifacts.map(artifact => artifact.location).join("\n"));
   }
 
   async selectContentType(contentTypeId) {
@@ -39,14 +34,22 @@ class UI {
 
   async getPackages() {
     let list = await this._browser.$('#package-list');
+
     let items = await list.$$(function() {
       return this.querySelectorAll('li');
     });
 
-    return this._packages;
-  }
+    let promises = items.map(async el => {
+      let locationSpan = await el.$('span.location');
+      let location = await locationSpan.getText();
 
-  async getPackage(packageEl) {
+      let contentTypeSpan = await el.$('span.content-type');
+      let contentType = await contentTypeSpan.getText();
+
+      return new Package(contentType, new RawArtifact(location));
+    });
+
+    return await Promise.all(promises);
   }
 }
 
