@@ -1,4 +1,4 @@
-const { RawArtifact, Package } = require("../../src/domain");
+const { RawArtifact } = require("../../src/domain");
 
 class Setup {
   aRawDigitalArtifact() {
@@ -46,7 +46,10 @@ class UI {
       let contentTypeSpan = await el.$('span.content-type');
       let contentType = await contentTypeSpan.getText();
 
-      return new Package(contentType, new RawArtifact(location));
+      return {
+        contentTypeId: contentType,
+        location: location
+      };
     });
 
     return await Promise.all(promises);

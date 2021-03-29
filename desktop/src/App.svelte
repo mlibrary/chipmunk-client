@@ -1,13 +1,14 @@
 <script>
 import { packageArtifactLocations } from './domain';
+import PackageList from './PackageList.svelte';
 
-let items = [];
+let packages = [];
 let artifactLocations;
 let contentType;
 
 function startPackaging() {
-  packageArtifactLocations(contentType, getArtifactLocations(), packages => {
-    items = packages;
+  packageArtifactLocations(contentType, getArtifactLocations(), newPackages => {
+    packages = newPackages;
   });
 }
 
@@ -32,11 +33,4 @@ function getArtifactLocations() {
   <button id="start-packaging" on:click|preventDefault={startPackaging} class="button">Start Packaging</button>
 </form>
 
-<ul id="package-list">
-{#each items as item}
-  <li>
-    <span class="location">{item.artifact.location}</span>
-    (<span class="content-type">{item.contentTypeId}</span>)
-  </li>
-{/each}
-</ul>
+<PackageList packages={packages}/>
