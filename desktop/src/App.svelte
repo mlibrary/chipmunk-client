@@ -1,5 +1,5 @@
 <script>
-import { packageArtifactLocations } from './domain';
+import { packageArtifactLocations } from './interactors';
 
 let packages = [];
 let artifactLocations;
@@ -35,7 +35,7 @@ function getArtifactLocations() {
 <ul id="package-list">
 {#each packages as pkg}
   <li>
-    <span class="location">{pkg.artifact.location}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
+    <span class="location">{pkg.location}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
   </li>
 {/each}
 </ul>
