@@ -5,9 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "concurrently \"npm:svelte-dev\" \"electron-forge start\"",
-    "test": "npm run svelte-build && cucumber-js",
-    "test:unit": "mocha",
-    "test:feature": "npx cucumber-js",
+    "test": "mocha",
+    "cukes": "npm run svelte-build && cucumber-js",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "svelte-build": "rollup -c",
@@ -46,7 +45,12 @@
     "@umich-lib/components": "^1.0.8",
     "@umich-lib/css": "^1.0.9-dev.64",
     "electron-squirrel-startup": "^1.0.0",
+    "esm": "^3.2.25",
     "numl": "^1.0.0-beta.25"
+  },
+  "mocha": {
+    "require": ["esm"],
+    "recursive": true
   },
   "config": {
     "forge": {

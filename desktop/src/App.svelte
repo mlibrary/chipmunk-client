@@ -39,3 +39,7 @@ function getArtifactLocations() {
   </li>
 {/each}
 </ul>
+
+<svelte:head>
+<script type="module" src="../node_modules/@umich-lib/components/dist/umich-lib/umich-lib.esm.js"></script>
+</svelte:head>

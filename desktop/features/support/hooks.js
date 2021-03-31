@@ -1,11 +1,12 @@
 'use strict';
 
+require = require('esm')(module);
 const path = require('path');
 const Application = require("spectron").Application
 const electronPath = require("electron")
 const appPath = path.join(__dirname, '../../')
 const { Before, After, setDefaultTimeout } = require('@cucumber/cucumber')
-const { Setup, Filesystem, UI } = require("../support/drivers");
+const { Setup, Filesystem, UI } = require("./drivers");
 
 // uncomment to debug without steps timing out
 // setDefaultTimeout(-1);
@@ -14,7 +15,6 @@ Before({tags: "@ui"}, function() {
   this.app = new Application({
     path: electronPath,
     args: [appPath],
-    webdriverOptions: { sync: true }
   })
   return this.app.start().then(() => { this.ui = new UI(this.app.client) })
 })

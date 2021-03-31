@@ -1,6 +1,9 @@
-const path = require("path");
-const fse = require("fs-extra");
-const os = require("os");
+import * as os from "os";
+import * as path from "path";
+import * as url from "url";
+import fse from "fs-extra";
+
+const fixturesBase = url.fileURLToPath(new URL('../../../spec/support/fixtures', import.meta.url));
 
 class Setup {
   constructor(filesystem) {
@@ -18,12 +21,10 @@ class Setup {
   }
 
   fixturePath(name) {
-    const fixturesDir = path.join(__dirname, '../../../spec/support/fixtures');
-
     if (name === 'digital')
-      return path.join(fixturesDir, 'digital/pre-chipmunk');
+      return path.join(fixturesBase, 'digital/pre-chipmunk');
     else
-      throw `Unavailable fixture: ${name}`;
+      throw new Error(`Unavailable fixture: ${name}`);
   }
 }
 
@@ -107,6 +108,4 @@ class UI {
   }
 }
 
-exports.Setup = Setup;
-exports.Filesystem = Filesystem;
-exports.UI = UI;
+export { Setup, Filesystem, UI };
