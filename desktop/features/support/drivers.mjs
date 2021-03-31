@@ -67,6 +67,7 @@ class UI {
     await this.selectArtifacts(artifacts);
     await this.selectContentType(contentTypeId);
     await this.startPackaging();
+    await this.readyForPackaging();
   }
 
   async selectArtifacts(artifacts) {
@@ -82,6 +83,11 @@ class UI {
   async startPackaging() {
     let el = await this._browser.$('#start-packaging');
     await el.click();
+  }
+
+  async readyForPackaging() {
+    let el = await this._browser.$('#status-ready');
+    await el.waitForExist();
   }
 
   async getPackages() {
