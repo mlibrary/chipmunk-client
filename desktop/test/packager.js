@@ -75,6 +75,8 @@ describe('Artifact Packager', function () {
     let packager
 
     beforeEach(() => {
+      fs.isReadableDir.withArgs('/bin/waste').returns(true)
+      fs.ensureDirectory.withArgs('/bin/bagged/waste').returns(true)
       packager = new Packager({ artifact, fs, bagger, listener })
     })
 
