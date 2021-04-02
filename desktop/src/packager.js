@@ -1,16 +1,65 @@
 import * as path from 'path';
 
+class PackagingError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = "PackagingError"
+  }
+}
+
 export default class Packager {
-  constructor({artifact, fs, bagger}) {
+  constructor({artifact, fs, bagger, listener}) {
     this.artifact = artifact;
     this.fs = fs;
     this.bagger = bagger;
+    this.listener = listener;
   }
 
-  package() {
-    if (this.sourceReadable() && this.targetWritable()) {
-      this.bagger.makeBag(this.artifact.contentTypeId, this.sourcePath, this.targetPath)
+  async package() {
+    try {
+      await this.validateType()
+      await this.validateSource()
+      await this.validateTarget()
+      await this.notifyPackaging()
+      await this.packageArtifact()
+      await this.notifyPackaged()
+    } catch(err) {
+      await this.notifyFailed()
     }
+  }
+
+  validateType() {
+    if (this.sourceType === 'garbage') {
+      throw new PackagingError(`Unsupported content type: ${this.sourceType}`)
+    }
+  }
+
+  validateSource() {
+    if (!this.sourceReadable()) {
+      throw new PackagingError(`Source directory unreadable: ${this.sourcePath}`)
+    }
+  }
+
+  validateTarget() {
+    if (!this.targetWritable()) {
+      throw new PackagingError(`Target directory unwritable: ${this.targetPath}`)
+    }
+  }
+
+  notifyPackaging() {
+    this.listener.packaging(this.artifact)
+  }
+
+  notifyPackaged() {
+    this.listener.packaged(this.artifact)
+  }
+
+  notifyFailed() {
+    this.listener.failed(this.artifact)
+  }
+
+  packageArtifact() {
+    this.bagger.makeBag(this.artifact.contentTypeId, this.sourcePath, this.targetPath)
   }
 
   sourceReadable() {
@@ -19,6 +68,10 @@ export default class Packager {
 
   targetWritable() {
     return this.fs.ensureDirectory(this.targetPath)
+  }
+
+  get sourceType() {
+    return this.artifact.contentTypeId
   }
 
   get sourcePath() {

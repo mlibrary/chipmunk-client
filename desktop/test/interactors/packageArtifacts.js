@@ -1,13 +1,7 @@
-import { expect, sinon, spy } from '../setup'
+import { expect, sinon, spy, duck } from '../setup'
 import PackageArtifacts from '../../src/interactors/packageArtifacts'
+import PackagingListener from '../../src/packagingListener'
 import RawArtifact from '../../src/rawArtifact'
-
-class PackagingEvents {
-  packaging() {}
-  packaged() {}
-  failed() {}
-  done() {}
-}
 
 // Fake for the makePackager factory method, yields a new packager spy each
 // call, pushing them onto an array. You can get the most recently created spy
@@ -47,7 +41,7 @@ describe('Packaging', function () {
 
     beforeEach(() => {
       packagers = []
-      listener = spy(new PackagingEvents());
+      listener = duck(PackagingListener);
       let makePackager = packagerFactory(packagers)
       interactor = new PackageArtifacts({contentTypeId, artifactLocations, listener, makePackager});
     })
@@ -88,7 +82,7 @@ describe('Packaging', function () {
 
     beforeEach(() => {
       packagers = []
-      listener = spy(new PackagingEvents());
+      listener = duck(PackagingListener);
       let makePackager = packagerFactory(packagers)
       interactor = new PackageArtifacts({contentTypeId, artifactLocations, listener, makePackager});
     })
