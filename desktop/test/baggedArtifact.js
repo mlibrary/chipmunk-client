@@ -7,7 +7,7 @@ describe('A Bagged Artifact', () => {
     let artifact
 
     beforeEach(() => {
-      artifact = new BaggedArtifact({path});
+      artifact = new BaggedArtifact({ path })
     })
 
     it('has path of /garage/578', () => {
@@ -28,7 +28,7 @@ describe('A Bagged Artifact', () => {
     let artifact
 
     beforeEach(() => {
-      artifact = new BaggedArtifact({path});
+      artifact = new BaggedArtifact({ path })
     })
 
     it('has path of /basement/cba', () => {

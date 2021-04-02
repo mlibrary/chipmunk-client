@@ -1,6 +1,8 @@
 import chai from 'chai'
+import dirtyChai from 'dirty-chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
+chai.use(dirtyChai)
 chai.use(sinonChai)
 
 const duck = sinon.createStubInstance

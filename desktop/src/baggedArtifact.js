@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'path'
 
 /**
  * A BaggedArtifact is an on-disk packaging of a digital artifact to be preserved.
@@ -7,15 +7,15 @@ import * as path from 'path';
  * contents are expected to be packaged in BagIt format, ready for deposit.
  */
 export default class BaggedArtifact {
-  constructor({path}) {
+  constructor ({ path }) {
     this.path = path
   }
 
-  get identifier() {
-    return path.basename(this.path);
+  get identifier () {
+    return path.basename(this.path)
   }
 
-  get parentDirectory() {
-    return path.dirname(this.path);
+  get parentDirectory () {
+    return path.dirname(this.path)
   }
 }

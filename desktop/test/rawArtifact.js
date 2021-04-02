@@ -8,7 +8,7 @@ describe('A Raw Artifact', () => {
     let artifact
 
     beforeEach(() => {
-      artifact = new RawArtifact({contentTypeId, path})
+      artifact = new RawArtifact({ contentTypeId, path })
     })
 
     it('has content type of "marshmallow"', () => {
@@ -34,7 +34,7 @@ describe('A Raw Artifact', () => {
     let artifact
 
     beforeEach(() => {
-      artifact = new RawArtifact({contentTypeId, path})
+      artifact = new RawArtifact({ contentTypeId, path })
     })
 
     it('has content type of "carrots"', () => {

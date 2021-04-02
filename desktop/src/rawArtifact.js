@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'path'
 
 /**
  * A RawArtifact is an on-disk representation of a digital artifact, processed
@@ -8,17 +8,16 @@ import * as path from 'path';
  * content type must be specified because it has not yet been tagged as such.
  */
 export default class RawArtifact {
-  constructor({contentTypeId, path}) {
-    this.contentTypeId = contentTypeId;
-    this.path = path;
+  constructor ({ contentTypeId, path }) {
+    this.contentTypeId = contentTypeId
+    this.path = path
   }
 
-  get identifier() {
-    return path.basename(this.path);
+  get identifier () {
+    return path.basename(this.path)
   }
 
-  get parentPath() {
-    return path.dirname(this.path);
+  get parentPath () {
+    return path.dirname(this.path)
   }
 }
-

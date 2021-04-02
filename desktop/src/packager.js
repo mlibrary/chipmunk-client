@@ -1,21 +1,21 @@
-import * as path from 'path';
+import * as path from 'path'
 
 class PackagingError extends Error {
-  constructor(message) {
+  constructor (message) {
     super(message)
-    this.name = "PackagingError"
+    this.name = 'PackagingError'
   }
 }
 
 export default class Packager {
-  constructor({artifact, fs, bagger, listener}) {
-    this.artifact = artifact;
-    this.fs = fs;
-    this.bagger = bagger;
-    this.listener = listener;
+  constructor ({ artifact, fs, bagger, listener }) {
+    this.artifact = artifact
+    this.fs = fs
+    this.bagger = bagger
+    this.listener = listener
   }
 
-  async package() {
+  async package () {
     try {
       await this.validateType()
       await this.validateSource()
@@ -23,62 +23,62 @@ export default class Packager {
       await this.notifyPackaging()
       await this.packageArtifact()
       await this.notifyPackaged()
-    } catch(err) {
+    } catch (err) {
       await this.notifyFailed()
     }
   }
 
-  validateType() {
+  validateType () {
     if (this.sourceType === 'garbage') {
       throw new PackagingError(`Unsupported content type: ${this.sourceType}`)
     }
   }
 
-  validateSource() {
+  validateSource () {
     if (!this.sourceReadable()) {
       throw new PackagingError(`Source directory unreadable: ${this.sourcePath}`)
     }
   }
 
-  validateTarget() {
+  validateTarget () {
     if (!this.targetWritable()) {
       throw new PackagingError(`Target directory unwritable: ${this.targetPath}`)
     }
   }
 
-  notifyPackaging() {
+  notifyPackaging () {
     this.listener.packaging(this.artifact)
   }
 
-  notifyPackaged() {
+  notifyPackaged () {
     this.listener.packaged(this.artifact)
   }
 
-  notifyFailed() {
+  notifyFailed () {
     this.listener.failed(this.artifact)
   }
 
-  packageArtifact() {
+  packageArtifact () {
     this.bagger.makeBag(this.artifact.contentTypeId, this.sourcePath, this.targetPath)
   }
 
-  sourceReadable() {
+  sourceReadable () {
     return this.fs.isReadableDir(this.sourcePath)
   }
 
-  targetWritable() {
+  targetWritable () {
     return this.fs.ensureDirectory(this.targetPath)
   }
 
-  get sourceType() {
+  get sourceType () {
     return this.artifact.contentTypeId
   }
 
-  get sourcePath() {
+  get sourcePath () {
     return this.artifact.path
   }
 
-  get targetPath() {
+  get targetPath () {
     return path.join(this.artifact.parentPath, 'bagged', this.artifact.identifier)
   }
 }

@@ -7,16 +7,16 @@ import RawArtifact from '../../src/rawArtifact'
 // call, pushing them onto an array. You can get the most recently created spy
 // by calling .packager on the returned function, or you can pass an array from
 // outside to collect them as they are created.
-function packagerFactory(packagers = []) {
-  function makePackager(artifact) {
+function packagerFactory (packagers = []) {
+  function makePackager (artifact) {
     packagerFactory.packager = {
       artifact: artifact,
       package: spy()
     }
-    packagers.push(packagerFactory.packager);
-    return packagerFactory.packager;
+    packagers.push(packagerFactory.packager)
+    return packagerFactory.packager
   }
-  return makePackager;
+  return makePackager
 }
 
 describe('Packaging', function () {
@@ -26,24 +26,24 @@ describe('Packaging', function () {
     const listener = { done: spy() }
 
     it('notifies that packaging is done', async () => {
-      let interactor = new PackageArtifacts({contentTypeId, artifactLocations, listener});
+      const interactor = new PackageArtifacts({ contentTypeId, artifactLocations, listener })
       await interactor.call()
 
-      expect(listener.done).to.have.been.called
+      expect(listener.done).to.have.been.called()
     })
   })
 
   context('with "digital" type and one artifact location', () => {
     const contentTypeId = 'digital'
     const artifactLocations = ['/foo/bar']
-    const artifact = new RawArtifact({contentTypeId: 'digital', path: '/foo/bar'})
+    const artifact = new RawArtifact({ contentTypeId: 'digital', path: '/foo/bar' })
     let interactor, listener, packagers
 
     beforeEach(() => {
       packagers = []
-      listener = duck(PackagingListener);
-      let makePackager = packagerFactory(packagers)
-      interactor = new PackageArtifacts({contentTypeId, artifactLocations, listener, makePackager});
+      listener = duck(PackagingListener)
+      const makePackager = packagerFactory(packagers)
+      interactor = new PackageArtifacts({ contentTypeId, artifactLocations, listener, makePackager })
     })
 
     it('notifies that the artifact is packaging', async () => {
@@ -53,7 +53,7 @@ describe('Packaging', function () {
 
     it('delegates packaging', async () => {
       await interactor.call()
-      expect(packagers[0].package).to.have.been.called
+      expect(packagers[0].package).to.have.been.called()
       expect(packagers[0].artifact).to.eql(artifact)
     })
 
@@ -64,7 +64,7 @@ describe('Packaging', function () {
 
     it('notifies that the batch is done', async () => {
       await interactor.call()
-      expect(listener.done).to.have.been.called
+      expect(listener.done).to.have.been.called()
     })
 
     it('runs everything in order', async () => {
@@ -76,21 +76,21 @@ describe('Packaging', function () {
   context('with "digital" type and two artifact locations', () => {
     const contentTypeId = 'digital'
     const artifactLocations = ['/foo/bar', '/bar/baz']
-    const artifactOne = new RawArtifact({contentTypeId: 'digital', path: '/foo/bar'})
-    const artifactTwo = new RawArtifact({contentTypeId: 'digital', path: '/bar/baz'})
+    const artifactOne = new RawArtifact({ contentTypeId: 'digital', path: '/foo/bar' })
+    const artifactTwo = new RawArtifact({ contentTypeId: 'digital', path: '/bar/baz' })
     let interactor, listener, packagers
 
     beforeEach(() => {
       packagers = []
-      listener = duck(PackagingListener);
-      let makePackager = packagerFactory(packagers)
-      interactor = new PackageArtifacts({contentTypeId, artifactLocations, listener, makePackager});
+      listener = duck(PackagingListener)
+      const makePackager = packagerFactory(packagers)
+      interactor = new PackageArtifacts({ contentTypeId, artifactLocations, listener, makePackager })
     })
 
-    it('packages both artifacts', async() => {
+    it('packages both artifacts', async () => {
       await interactor.call()
-      expect(packagers[0].package).to.have.been.called
-      expect(packagers[1].package).to.have.been.called
+      expect(packagers[0].package).to.have.been.called()
+      expect(packagers[1].package).to.have.been.called()
     })
 
     it('notifies that artifact one is packaged', async () => {
