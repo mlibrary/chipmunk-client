@@ -1,4 +1,7 @@
 import * as path from 'path'
+import Bagger from './bagger'
+import Filesystem from './filesystem'
+import PackagingListener from './packagingListener'
 
 class PackagingError extends Error {
   constructor (message) {
@@ -8,7 +11,12 @@ class PackagingError extends Error {
 }
 
 export default class Packager {
-  constructor ({ artifact, fs, bagger, listener }) {
+  constructor ({
+    artifact,
+    fs = new Filesystem(),
+    bagger = new Bagger(),
+    listener = new PackagingListener()
+  }) {
     this.artifact = artifact
     this.fs = fs
     this.bagger = bagger

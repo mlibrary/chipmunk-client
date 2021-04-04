@@ -1,4 +1,5 @@
 import BaggedArtifact from './baggedArtifact'
+import ShellRunner from './shellRunner'
 
 class MakeBagCommand {
   constructor (rawArtifact, targetPath) {
@@ -63,7 +64,7 @@ class MakeBagCommand {
 }
 
 export default class Bagger {
-  constructor ({ runner }) {
+  constructor ({ runner = new ShellRunner() }) {
     this.runner = runner
   }
 

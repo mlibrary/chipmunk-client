@@ -1,7 +1,7 @@
 export default class PackagingListener {
-  packaging () {}
-  packaged () {}
-  failed () {}
+  packaging (artifact) {}
+  packaged (artifact) {}
+  failed (artifact) {}
   done () {}
 }
 

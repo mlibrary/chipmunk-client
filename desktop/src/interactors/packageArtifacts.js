@@ -1,12 +1,14 @@
 import RawArtifact from '../rawArtifact'
-import { wait } from '../util'
-
-function defaultPackager () {
-  return (artifact) => ({ async package () { return await wait(100) } })
-}
+import Packager from '../Packager'
+import PackagingListener from '../packagingListener'
 
 export default class PackageArtifacts {
-  constructor ({ contentTypeId, artifactLocations, listener, makePackager = defaultPackager() }) {
+  constructor ({
+    contentTypeId,
+    artifactLocations,
+    listener = new PackagingListener(),
+    makePackager = artifact => new Packager(artifact)
+  }) {
     this.listener = listener
     this.makePackager = makePackager
     this.artifacts = this.buildArtifacts(contentTypeId, artifactLocations)
