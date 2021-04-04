@@ -19,7 +19,7 @@ function packagerFactory (packagers = []) {
   return makePackager
 }
 
-describe('Packaging', function () {
+describe('Packaging Artifacts', function () {
   context('with "digital" type, but no artifacts', () => {
     const contentTypeId = 'digital'
     const artifactLocations = []

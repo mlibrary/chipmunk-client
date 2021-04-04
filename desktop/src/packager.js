@@ -59,7 +59,7 @@ export default class Packager {
   }
 
   packageArtifact () {
-    this.bagger.makeBag(this.artifact.contentTypeId, this.sourcePath, this.targetPath)
+    this.bagger.makeBag({ rawArtifact: this.artifact, targetPath: this.targetPath })
   }
 
   sourceReadable () {
@@ -79,6 +79,10 @@ export default class Packager {
   }
 
   get targetPath () {
-    return path.join(this.artifact.parentPath, 'bagged', this.artifact.identifier)
+    if (this.artifact.processInPlace()) {
+      return this.artifact.path
+    } else {
+      return path.join(this.artifact.parentPath, 'bagged', this.artifact.identifier)
+    }
   }
 }

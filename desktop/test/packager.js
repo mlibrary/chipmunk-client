@@ -1,18 +1,11 @@
 import { expect, sinon, duck } from './setup'
+import Bagger from '../src/bagger'
+import Filesystem from '../src/filesystem'
 import Packager from '../src/packager'
 import PackagingListener from '../src/packagingListener'
 import RawArtifact from '../src/rawArtifact'
 
-class Filesystem {
-  isReadableDir () { }
-  ensureDirectory () {}
-}
-
-class Bagger {
-  makeBag () {}
-}
-
-describe('Artifact Packager', function () {
+describe('An Artifact Packager', function () {
   let fs, bagger, listener
 
   beforeEach(() => {
@@ -21,14 +14,14 @@ describe('Artifact Packager', function () {
     listener = duck(PackagingListener)
   })
 
-  context('with a valid raw artifact and writable destination', () => {
-    const artifact = new RawArtifact({ contentTypeId: 'digital', path: '/foo/bar' })
+  context('given a "digital" raw artifact', () => {
+    const rawArtifact = new RawArtifact({ contentTypeId: 'digital', path: '/foo/bar' })
     let packager
 
     beforeEach(() => {
       fs.isReadableDir.withArgs('/foo/bar').returns(true)
-      fs.ensureDirectory.withArgs('/foo/bagged/bar').returns(true)
-      packager = new Packager({ artifact, fs, bagger, listener })
+      fs.ensureDirectory.withArgs('/foo/bar').returns(true)
+      packager = new Packager({ artifact: rawArtifact, fs, bagger, listener })
     })
 
     it('operates in order', async () => {
@@ -38,46 +31,46 @@ describe('Artifact Packager', function () {
 
     it('notifies that packaging has started', async () => {
       await packager.package()
-      expect(listener.packaging).to.have.been.calledWith(artifact)
+      expect(listener.packaging).to.have.been.calledWith(rawArtifact)
     })
 
-    it('bags the artifact', async () => {
+    it('updates the artifact in place', async () => {
       await packager.package()
-      expect(bagger.makeBag).to.have.been.calledOnceWith('digital', '/foo/bar', '/foo/bagged/bar')
+      expect(bagger.makeBag).to.have.been.calledOnceWith({ rawArtifact, targetPath: '/foo/bar' })
     })
 
     it('notifies that packaging has completed', async () => {
       await packager.package()
-      expect(listener.packaged).to.have.been.calledWith(artifact)
+      expect(listener.packaged).to.have.been.calledWith(rawArtifact)
     })
   })
 
   // This context was to drive parameter use; we now know it isn't just using literals,
   // so it might go away, or more likely, become a "two artifact" context (two packagers).
-  context('with a different raw artifact', () => {
-    const artifact = new RawArtifact({ contentTypeId: 'food', path: '/garden/carrots' })
+  context('given a different raw artifact', () => {
+    const rawArtifact = new RawArtifact({ contentTypeId: 'food', path: '/garden/carrots' })
     let packager
 
     beforeEach(() => {
       fs.isReadableDir.withArgs('/garden/carrots').returns(true)
       fs.ensureDirectory.withArgs('/garden/bagged/carrots').returns(true)
-      packager = new Packager({ artifact, fs, bagger, listener })
+      packager = new Packager({ artifact: rawArtifact, fs, bagger, listener })
     })
 
     it('bags the artifact', async () => {
       await packager.package()
-      expect(bagger.makeBag).to.have.been.calledOnceWith('food', '/garden/carrots', '/garden/bagged/carrots')
+      expect(bagger.makeBag).to.have.been.calledOnceWith({ rawArtifact, targetPath: '/garden/bagged/carrots' })
     })
   })
 
-  context('with a garbage artifact', () => {
-    const artifact = new RawArtifact({ contentTypeId: 'garbage', path: '/bin/waste' })
+  context('given a garbage artifact', () => {
+    const rawArtifact = new RawArtifact({ contentTypeId: 'garbage', path: '/bin/waste' })
     let packager
 
     beforeEach(() => {
       fs.isReadableDir.withArgs('/bin/waste').returns(true)
       fs.ensureDirectory.withArgs('/bin/bagged/waste').returns(true)
-      packager = new Packager({ artifact, fs, bagger, listener })
+      packager = new Packager({ artifact: rawArtifact, fs, bagger, listener })
     })
 
     it('does not attempt to bag the garbage', async () => {
@@ -87,17 +80,17 @@ describe('Artifact Packager', function () {
 
     it('notifies that packaging failed', async () => {
       await packager.package()
-      expect(listener.failed).to.have.been.calledWith(artifact)
+      expect(listener.failed).to.have.been.calledWith(rawArtifact)
     })
   })
 
-  context('with an unreadable source directory', () => {
-    const artifact = new RawArtifact({ contentTypeId: 'junk', path: '/bad/123' })
+  context('given a Raw Artifact with an unreadable source directory', () => {
+    const rawArtifact = new RawArtifact({ contentTypeId: 'junk', path: '/bad/123' })
     let packager
 
     beforeEach(() => {
       fs.isReadableDir.returns(false)
-      packager = new Packager({ artifact, fs, bagger, listener })
+      packager = new Packager({ artifact: rawArtifact, fs, bagger, listener })
     })
 
     it('does not attempt to create a destination directory', async () => {
@@ -112,18 +105,18 @@ describe('Artifact Packager', function () {
 
     it('notifies that packaging the artifact failed', async () => {
       await packager.package()
-      expect(listener.failed).to.have.been.calledWith(artifact)
+      expect(listener.failed).to.have.been.calledWith(rawArtifact)
     })
   })
 
-  context('when the destination path it computes is unwritable', () => {
-    const artifact = new RawArtifact({ contentTypeId: 'junk', path: '/bad/123' })
+  context('given an unwritable destination path', () => {
+    const rawArtifact = new RawArtifact({ contentTypeId: 'junk', path: '/bad/123' })
     let packager
 
     beforeEach(() => {
       fs.isReadableDir.returns(true)
       fs.ensureDirectory.returns(false)
-      packager = new Packager({ artifact, fs, bagger, listener })
+      packager = new Packager({ artifact: rawArtifact, fs, bagger, listener })
     })
 
     it('attempts to create the destination directory', async () => {

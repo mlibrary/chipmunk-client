@@ -2,7 +2,7 @@ import { expect } from './setup'
 import RawArtifact from '../src/rawArtifact'
 
 describe('A Raw Artifact', () => {
-  context('given content type "marshmallow" and source path "/somewhere/123"', () => {
+  context('with content type "marshmallow" and source path "/somewhere/123"', () => {
     const contentTypeId = 'marshmallow'
     const path = '/somewhere/123'
     let artifact
@@ -28,7 +28,7 @@ describe('A Raw Artifact', () => {
     })
   })
 
-  context('given content type "carrots" and source path "/garden/abc"', () => {
+  context('with content type "carrots" and source path "/garden/abc"', () => {
     const contentTypeId = 'carrots'
     const path = '/garden/abc'
     let artifact
@@ -51,6 +51,26 @@ describe('A Raw Artifact', () => {
 
     it('knows that it is in directory /garden', () => {
       expect(artifact.parentPath).to.eq('/garden')
+    })
+  })
+
+  context('with content type "digital"', () => {
+    const contentTypeId = 'digital'
+    const path = '/anywhere/abc'
+
+    it('should be processed in place', () => {
+      const artifact = new RawArtifact({ contentTypeId, path })
+      expect(artifact.processInPlace()).to.eq(true)
+    })
+  })
+
+  context('with content type "video_game"', () => {
+    const contentTypeId = 'video_game'
+    const path = '/anywhere/abc'
+
+    it('should be processed in place', () => {
+      const artifact = new RawArtifact({ contentTypeId, path })
+      expect(artifact.processInPlace()).to.eq(true)
     })
   })
 })
