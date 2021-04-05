@@ -8,9 +8,10 @@ import RawArtifact from '../../src/rawArtifact'
 // by calling .packager on the returned function, or you can pass an array from
 // outside to collect them as they are created.
 function packagerFactory (packagers = []) {
-  function makePackager (artifact) {
+  function makePackager (artifact, listener) {
     packagerFactory.packager = {
       artifact: artifact,
+      listener: listener,
       package: spy()
     }
     packagers.push(packagerFactory.packager)
@@ -46,9 +47,9 @@ describe('Packaging Artifacts', function () {
       interactor = new PackageArtifacts({ contentTypeId, artifactLocations, listener, makePackager })
     })
 
-    it('notifies that the artifact is packaging', async () => {
+    it('passes along its listener', async () => {
       await interactor.call()
-      expect(listener.packaging).to.have.been.calledWith(artifact)
+      expect(packagers[0].listener).to.eq(listener)
     })
 
     it('delegates packaging', async () => {
@@ -57,27 +58,20 @@ describe('Packaging Artifacts', function () {
       expect(packagers[0].artifact).to.eql(artifact)
     })
 
-    it('notifies that the artifact is packaged', async () => {
-      await interactor.call()
-      expect(listener.packaged).to.have.been.calledWith(artifact)
-    })
-
     it('notifies that the batch is done', async () => {
       await interactor.call()
       expect(listener.done).to.have.been.called()
     })
 
-    it('runs everything in order', async () => {
+    it('delegates before notifying done', async () => {
       await interactor.call()
-      sinon.assert.callOrder(listener.packaging, packagers[0].package, listener.packaged, listener.done)
+      sinon.assert.callOrder(packagers[0].package, listener.done)
     })
   })
 
   context('with "digital" type and two artifact locations', () => {
     const contentTypeId = 'digital'
     const artifactLocations = ['/foo/bar', '/bar/baz']
-    const artifactOne = new RawArtifact({ contentTypeId: 'digital', path: '/foo/bar' })
-    const artifactTwo = new RawArtifact({ contentTypeId: 'digital', path: '/bar/baz' })
     let interactor, listener, packagers
 
     beforeEach(() => {
@@ -87,25 +81,9 @@ describe('Packaging Artifacts', function () {
       interactor = new PackageArtifacts({ contentTypeId, artifactLocations, listener, makePackager })
     })
 
-    it('packages both artifacts', async () => {
+    it('delegates for both packages before notifying that the batch is done', async () => {
       await interactor.call()
-      expect(packagers[0].package).to.have.been.called()
-      expect(packagers[1].package).to.have.been.called()
-    })
-
-    it('notifies that artifact one is packaged', async () => {
-      await interactor.call()
-      expect(listener.packaged).to.have.been.calledWith(artifactOne)
-    })
-
-    it('notifies that artifact two is packaged', async () => {
-      await interactor.call()
-      expect(listener.packaged).to.have.been.calledWith(artifactTwo)
-    })
-
-    it('finishes both packages before notifying that the batch is done', async () => {
-      await interactor.call()
-      sinon.assert.callOrder(listener.packaged, listener.packaged, listener.done)
+      sinon.assert.callOrder(packagers[0].package, packagers[1].package, listener.done)
     })
   })
 })

@@ -7,25 +7,31 @@ export default class PackageArtifacts {
     contentTypeId,
     artifactLocations,
     listener = new PackagingListener(),
-    makePackager = artifact => new Packager(artifact)
+    makePackager = (artifact, listener) => new Packager({ artifact, listener })
   }) {
     this.listener = listener
     this.makePackager = makePackager
     this.artifacts = this.buildArtifacts(contentTypeId, artifactLocations)
   }
 
+  static invoke (...args) {
+    return new PackageArtifacts(...args).call()
+  }
+
   async call () {
-    await this.artifacts.forEach(artifact => this.process(artifact))
+    for (const artifact of this.artifacts) {
+      await this.process(artifact)
+    }
     this.listener.done()
   }
 
   async process (artifact) {
-    this.listener.packaging(artifact)
-    await this.makePackager(artifact).package()
-    this.listener.packaged(artifact)
+    await this.makePackager(artifact, this.listener).package()
   }
 
   buildArtifacts (contentTypeId, artifactLocations) {
     return artifactLocations.map(path => new RawArtifact({ contentTypeId, path }))
   }
 }
+
+export const { invoke } = PackageArtifacts

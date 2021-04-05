@@ -68,12 +68,21 @@ export default class Bagger {
     this.runner = runner
   }
 
-  makeBag ({ rawArtifact, targetPath }) {
+  async makeBag ({ rawArtifact, targetPath }) {
     const cmd = new MakeBagCommand(rawArtifact, targetPath)
-    this.runner.exec(cmd.command, cmd.args)
+    let exitCode = -1
+    let error = null
+    try {
+      exitCode = await this.runner.exec({ command: cmd.command, args: cmd.args })
+    } catch (execError) {
+      error = execError
+    }
 
-    const baggedArtifact = new BaggedArtifact({ path: targetPath })
-    return Promise.resolve(baggedArtifact)
+    if (error || exitCode !== 0) {
+      throw new Error(`Could not bag artifact (${rawArtifact.contentTypeId}) at: ${rawArtifact.path}`)
+    } else {
+      return new BaggedArtifact({ path: targetPath })
+    }
   }
 }
 

@@ -14,7 +14,7 @@ export default class Packager {
   constructor ({
     artifact,
     fs = new Filesystem(),
-    bagger = new Bagger(),
+    bagger = new Bagger({}),
     listener = new PackagingListener()
   }) {
     this.artifact = artifact
@@ -32,7 +32,7 @@ export default class Packager {
       await this.packageArtifact()
       await this.notifyPackaged()
     } catch (err) {
-      await this.notifyFailed()
+      await this.notifyFailed(err)
     }
   }
 
@@ -62,12 +62,12 @@ export default class Packager {
     this.listener.packaged(this.artifact)
   }
 
-  notifyFailed () {
-    this.listener.failed(this.artifact)
+  notifyFailed (err) {
+    this.listener.failed(this.artifact, err)
   }
 
-  packageArtifact () {
-    this.bagger.makeBag({ rawArtifact: this.artifact, targetPath: this.targetPath })
+  async packageArtifact () {
+    await this.bagger.makeBag({ rawArtifact: this.artifact, targetPath: this.targetPath })
   }
 
   sourceReadable () {

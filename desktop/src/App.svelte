@@ -1,41 +1,45 @@
 <script>
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+let packages = []
+let errors = []
+let artifactLocations
+let contentType
+let status = "Ready"
 
-let packages = [];
-let artifactLocations;
-let contentType;
-let status = "Ready";
+function packaging(artifact) {
+  console.log(`Packaging: ${artifact.path} (${artifact.contentTypeId})`)
+}
 
-function startPackaging() {
-  // We think this is a pretty good shape... The above sets the protocol/interface. We want to
-  // start building the real interactor now. We will probably implement the event handlers
-  // as top level functions on the component and then use a literal to bind and pass them.
-  // For example, listener: { queued, packaging, packaged, failed, done } would sugar out to an
-  // object with just the event functions, rather than the whole component.
+function packaged(artifact) {
+  console.log(`Packaged: ${artifact.path} (${artifact.contentTypeId})`)
+  packages = [...packages, artifact]
+}
 
-  // new PackageArtifacts({contentType, artifactLocations: getArtifactLocations(), listener}).call();
+function failed(artifact, err) {
+  console.error(err)
+  errors = [...errors, artifact]
+}
 
-  // Completely fake implementation to drive out the interface/events for the interactor
-  packages = [];
-  status = "Working"
-
-  let listener = {
-      queued() {},
-      packaging() {},
-      packaged(x) { packages = [...packages, x] },
-      failed() {},
-      done() { status = "Ready" }
-  }
-
-  getArtifactLocations().forEach((location) => {
-    listener.packaged({ contentTypeId: contentType, location: location })
-  })
-
-  wait(500).then(() => { listener.done() })
+function done() {
+  status = "Ready"
 }
 
 function getArtifactLocations() {
-  return artifactLocations.split("\n");
+    return artifactLocations.split("\n").map(line => line.trim()).filter(line => line.length !== 0);
+}
+
+function startPackaging() {
+  let locations = getArtifactLocations()
+  if (locations.length === 0) {
+    return
+  }
+
+  packages = [];
+  errors = [];
+  status = "Working"
+
+
+  let listener = { packaging, packaged, failed, done }
+  interactors.PackageArtifacts({contentTypeId: contentType, artifactLocations: locations, listener})
 }
 </script>
 
@@ -44,7 +48,7 @@ function getArtifactLocations() {
 <form>
   <label>
     <span>Artifacts</span>
-    <textarea id="artifact-list" name="artifact-list" bind:value={artifactLocations}/>
+    <textarea id="artifact-list" name="artifact-list" rows="10" cols="80" bind:value={artifactLocations}></textarea>
   </label>
 
   <label>
@@ -63,13 +67,27 @@ function getArtifactLocations() {
   {/if}
 </h2>
 
+{#if packages.length !== 0}
+<h3>Successful Packages</h3>
 <ul id="package-list">
 {#each packages as pkg}
   <li>
-    <span class="location">{pkg.location}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
+    <span class="location">{pkg.path}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
   </li>
 {/each}
 </ul>
+{/if}
+
+{#if errors.length !== 0}
+<h3>Errors</h3>
+<ul id="error-list">
+{#each errors as pkg}
+  <li>
+    <span class="location">{pkg.path}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
+  </li>
+{/each}
+</ul>
+{/if}
 
 <svelte:head>
 <script type="module" src="../node_modules/@umich-lib/components/dist/umich-lib/umich-lib.esm.js"></script>

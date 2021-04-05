@@ -19,43 +19,44 @@ describe('An Artifact Bagger', () => {
 
     beforeEach(() => {
       bagger = new Bagger({ runner })
+      runner.exec.returns(0)
     })
 
     // These are awkward matches because of the [command, [args...]] structure.
     // We have to grab the args to the first call to exec and then inspect those.
     it('launches and cleans up a docker container', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const [cmd, args] = runner.exec.args[0]
+      const { command, args } = runner.exec.args[0][0]
 
-      expect(cmd).to.eq('docker')
+      expect(command).to.eq('docker')
       expect(args[0]).to.eq('run')
       expect(args[1]).to.eq('--rm')
     })
 
     it('mounts the raw artifact at /source', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['--mount', 'type=bind,"src=/garden/carrots",dst=/source'])
     })
 
     it('mounts the bagged artifact directory at /target', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['--mount', 'type=bind,"src=/garden/bagged/carrots",dst=/target'])
     })
 
     it('runs the makebag command in the mlibrary/chipmunk-client:latest image', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['mlibrary/chipmunk-client:latest', 'bin/makebag'])
     })
 
     it('runs the makebag command with source, type, id, and target', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['bin/makebag', '-s', '/source', 'food', 'carrots'])
     })
@@ -75,53 +76,62 @@ describe('An Artifact Bagger', () => {
 
     beforeEach(() => {
       bagger = new Bagger({ runner })
+      runner.exec.returns(0)
     })
 
     it('mounts the raw artifact at /source', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['--mount', 'type=bind,"src=/pantry/rice",dst=/source'])
     })
 
     it('mounts the bagged artifact directory at /target', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['--mount', 'type=bind,"src=/pantry/bagged/rice",dst=/target'])
     })
 
     it('runs the makebag command with source, type, id, and target', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
       expect(args).to.containSequence(['bin/makebag', '-s', '/source', 'staple', 'rice', '/target'])
     })
   })
 
-  context('given a Raw Artifact in /pantry/rice', () => {
-    const contentTypeId = 'staple'
-    const sourcePath = '/pantry/rice'
-    const targetPath = '/pantry/bagged/rice'
+  context('given a Raw Artifact that should be processed in place', () => {
+    const contentTypeId = 'digital'
+    const sourcePath = '/place/stuff'
+    const targetPath = '/place/stuff'
     const rawArtifact = new RawArtifact({ contentTypeId, path: sourcePath })
     let bagger
 
     beforeEach(() => {
       bagger = new Bagger({ runner })
+      runner.exec.returns(0)
     })
 
-    it('mounts the raw artifact at /source', async () => {
+    it('mounts the raw artifact at /target', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
-      expect(args).to.containSequence(['--mount', 'type=bind,"src=/pantry/rice",dst=/source'])
+      expect(args).to.containSequence(['--mount', 'type=bind,"src=/place/stuff",dst=/target'])
     })
 
-    it('mounts the destination at /target', async () => {
+    it('does not mount the raw artifact at /source', async () => {
       await bagger.makeBag({ rawArtifact, targetPath })
-      const args = runner.exec.args[0][1]
+      const { args } = runner.exec.args[0][0]
 
-      expect(args).to.containSequence(['--mount', 'type=bind,"src=/pantry/bagged/rice",dst=/target'])
+      expect(args).not.to.containSequence(['--mount', 'type=bind,"src=/place/stuff",dst=/source'])
+    })
+
+    it('does not include the -s /source arguments', async () => {
+      await bagger.makeBag({ rawArtifact, targetPath })
+      const { args } = runner.exec.args[0][0]
+
+      expect(args).not.to.containSequence(['-s', '/source'])
     })
   })
 })
