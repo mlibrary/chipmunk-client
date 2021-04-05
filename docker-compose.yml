@@ -7,3 +7,7 @@ services:
     command: ["bundle", "exec", "rspec"]
     volumes:
       - .:/app
+      - gem_cache:/gems
+
+volumes:
+  gem_cache:
