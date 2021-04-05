@@ -1,3 +1,4 @@
+import dedent from 'dedent'
 import BaggedArtifact from './baggedArtifact'
 import ShellRunner from './shellRunner'
 
@@ -72,14 +73,22 @@ export default class Bagger {
     const cmd = new MakeBagCommand(rawArtifact, targetPath)
     let exitCode = -1
     let error = null
+    let stdout = ''
+    let stderr = ''
+    const out = (data) => { stdout += data }
+    const err = (data) => { stderr += data }
     try {
-      exitCode = await this.runner.exec({ command: cmd.command, args: cmd.args })
+      exitCode = await this.runner.exec({ command: cmd.command, args: cmd.args, out, err })
     } catch (execError) {
       error = execError
     }
-
     if (error || exitCode !== 0) {
-      throw new Error(`Could not bag artifact (${rawArtifact.contentTypeId}) at: ${rawArtifact.path}`)
+      throw new Error(dedent`
+        Could not bag artifact (${rawArtifact.contentTypeId}) at: ${rawArtifact.path}
+        ${error && `error message: ${error.message}`}
+        ${error && `stack: ${error.stack}`}
+        stdout: ${stdout}
+        stderr:${stderr}`)
     } else {
       return new BaggedArtifact({ path: targetPath })
     }

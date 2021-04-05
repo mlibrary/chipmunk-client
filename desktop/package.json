@@ -49,6 +49,7 @@
   "dependencies": {
     "@umich-lib/components": "^1.0.8",
     "@umich-lib/css": "^1.0.9-dev.64",
+    "dedent": "^0.7.0",
     "electron-squirrel-startup": "^1.0.0",
     "esm": "^3.2.25",
     "numl": "^1.0.0-beta.25"

@@ -67,8 +67,7 @@ function startPackaging() {
   {/if}
 </h2>
 
-{#if packages.length !== 0}
-<h3>Successful Packages</h3>
+<h3>Packages</h3>
 <ul id="package-list">
 {#each packages as pkg}
   <li>
@@ -76,9 +75,7 @@ function startPackaging() {
   </li>
 {/each}
 </ul>
-{/if}
 
-{#if errors.length !== 0}
 <h3>Errors</h3>
 <ul id="error-list">
 {#each errors as pkg}
@@ -87,7 +84,6 @@ function startPackaging() {
   </li>
 {/each}
 </ul>
-{/if}
 
 <svelte:head>
 <script type="module" src="../node_modules/@umich-lib/components/dist/umich-lib/umich-lib.esm.js"></script>
