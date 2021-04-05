@@ -1,5 +1,5 @@
 import RawArtifact from '../rawArtifact'
-import Packager from '../Packager'
+import Packager from '../packager'
 import PackagingListener from '../packagingListener'
 
 export default class PackageArtifacts {
