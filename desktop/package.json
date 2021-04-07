@@ -1,0 +1,99 @@
+{
+  "name": "darkblue-desktop",
+  "version": "1.0.0",
+  "description": "Dark Blue Desktop Client",
+  "main": "main.js",
+  "scripts": {
+    "start": "concurrently \"npm:svelte-dev\" \"electron-forge start\"",
+    "test": "standard && mocha",
+    "cukes": "npm run svelte-build && cucumber-js",
+    "lint": "standard",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "svelte-build": "rollup -c",
+    "svelte-dev": "rollup -c -w",
+    "svelte-start": "sirv public"
+  },
+  "keywords": [],
+  "author": "The Regents of...",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@cucumber/cucumber": "^7.0.0",
+    "@cucumber/pretty-formatter": "^1.0.0-alpha.0",
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@wdio/sync": "^7.2.1",
+    "chai": "^4.3.4",
+    "concurrently": "^6.0.0",
+    "dirty-chai": "^2.0.1",
+    "electron": "^12.0.1",
+    "electron-reloader": "^1.2.0",
+    "fs-extra": "^8.1.0",
+    "mocha": "^8.3.2",
+    "rollup": "^2.42.3",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "sinon": "^10.0.0",
+    "sinon-chai": "^3.6.0",
+    "sirv-cli": "^1.0.11",
+    "spectron": "^14.0.0",
+    "standard": "^16.0.3",
+    "svelte": "^3.35.0"
+  },
+  "dependencies": {
+    "@umich-lib/components": "^1.0.8",
+    "@umich-lib/css": "^1.0.9-dev.64",
+    "dedent": "^0.7.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "esm": "^3.2.25",
+    "numl": "^1.0.0-beta.25"
+  },
+  "standard": {
+    "envs": [
+      "mocha"
+    ]
+  },
+  "mocha": {
+    "require": [
+      "esm"
+    ],
+    "recursive": true,
+    "exclude": [
+      "test/setup.js"
+    ]
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "darkblue_desktop"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}

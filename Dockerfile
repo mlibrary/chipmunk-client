@@ -3,6 +3,7 @@ FROM ruby:2.5 as base
 RUN gem install bundler
 
 ENV APP_PATH /app
+ENV BUNDLE_PATH /gems
 RUN mkdir -p $APP_PATH
 WORKDIR $APP_PATH
 COPY Gemfile Gemfile.lock ./

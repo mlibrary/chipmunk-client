@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header#app-header {
+  background-color: var(--color-blue-100);
+  padding: var(--space-x-small);
+  font-weight: var(--bold);
+  height: 35px;
+  flex-shrink: 0;
+}
+
+main {
+  background-color: light-gray;
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
+label {
+  display: block;
+}
+
+label > span {
+  display: block;
+}
+
+form > button {
+  margin-top: var(--space-large);
+}

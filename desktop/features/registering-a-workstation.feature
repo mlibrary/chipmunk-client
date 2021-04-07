@@ -1,0 +1,1 @@
+Feature: Registering my workstation
