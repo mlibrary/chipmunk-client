@@ -6,8 +6,10 @@
   "scripts": {
     "start": "concurrently \"npm:svelte-dev\" \"electron-forge start\"",
     "test": "standard && mocha",
-    "cukes": "npm run svelte-build && cucumber-js",
     "lint": "standard",
+    "units": "mocha",
+    "features": "npm run cukes",
+    "cukes": "npm run svelte-build && cucumber-js",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "svelte-build": "rollup -c",
@@ -95,5 +97,8 @@
         }
       ]
     }
+  },
+  "volta": {
+    "node": "14.16.1"
   }
 }
