@@ -55,9 +55,25 @@ class Filesystem {
   }
 }
 
+class BrowserError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'BrowserError'
+  }
+}
+
 class UI {
   constructor (browser) {
     this._browser = browser
+  }
+
+  async checkErrors () {
+    const errors = await this._browser.getLogs('browser')
+    const severe = errors.filter(log => log.level === 'SEVERE')
+    if (severe.length !== 0) {
+      const messages = 'SEVERE errors:\n' + severe.map(log => `${log.message}`).join('\n------\n')
+      throw new BrowserError(messages)
+    }
   }
 
   async packageArtifacts (contentTypeId, artifacts) {

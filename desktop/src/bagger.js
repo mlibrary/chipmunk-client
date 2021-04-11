@@ -85,8 +85,8 @@ export default class Bagger {
     if (error || exitCode !== 0) {
       throw new Error(dedent`
         Could not bag artifact (${rawArtifact.contentTypeId}) at: ${rawArtifact.path}
-        ${error && `error message: ${error.message}`}
-        ${error && `stack: ${error.stack}`}
+        ${(error && `error message: ${error.message}`) || ''}
+        ${(error && `stack: ${error.stack}`) || ''}
         stdout: ${stdout}
         stderr:${stderr}`)
     } else {

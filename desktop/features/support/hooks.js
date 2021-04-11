@@ -25,6 +25,10 @@ After({ tags: '@ui' }, function () {
   return this.app.stop()
 })
 
+After({ tags: '@ui' }, function () {
+  return this.ui.checkErrors()
+})
+
 Before(function () {
   this.teardownSteps = []
   this.filesystem = new Filesystem(this.teardownSteps)
