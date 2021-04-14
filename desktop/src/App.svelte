@@ -1,9 +1,23 @@
 <script>
+  import { onMount } from 'svelte'
+
 let packages = []
 let errors = []
 let artifactLocations
 let contentType
 let status = "Ready"
+
+let eventTable
+
+onMount(() => {
+  jQuery(document).foundation()
+  eventTable = jQuery('#event-log').DataTable({
+    "scrollY": "200px",
+    "ordering": false,
+    "paging": false,
+    "searching": false,
+  })
+})
 
 function packaging(artifact) {
   console.log(`Packaging: ${artifact.path} (${artifact.contentTypeId})`)
@@ -41,50 +55,166 @@ function startPackaging() {
   let listener = { packaging, packaged, failed, done }
   interactors.PackageArtifacts({contentTypeId: contentType, artifactLocations: locations, listener})
 }
+
 </script>
+<div class="app-shell">
+  <div class="app-header">
+    <h1 class="h4 subheader">Dark Blue Uploader</h1>
+  </div>
+  <aside class="app-workspace">
+    <h2 class="h6">Workspace</h2>
+    <ul class="accordion" data-accordion>
+      <li class="accordion-item is-active" data-accordion-item>
+        <!-- Accordion tab title -->
+        <a href="#" class="accordion-title">Accordion 1</a>
 
-<h1><span class="subtle-heading">Step 1 of 3 to upload</span><br/>Select Artifacts</h1>
+        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
+        <div class="accordion-content" data-tab-content>
+          <p>Panel 1. Lorem ipsum dolor</p>
+          <a href="#">Nowhere to Go</a>
+        </div>
+      </li>
+      <li class="accordion-item" data-accordion-item>
+        <!-- Accordion tab title -->
+        <a href="#" class="accordion-title">Accordion 1</a>
 
-<form>
-  <label>
-    <span>Artifacts</span>
-    <textarea id="artifact-list" name="artifact-list" rows="10" cols="80" bind:value={artifactLocations}></textarea>
-  </label>
+        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
+        <div class="accordion-content" data-tab-content>
+          <p>Panel 1. Lorem ipsum dolor</p>
+          <a href="#">Nowhere to Go</a>
+        </div>
+      </li>
+      <li class="accordion-item" data-accordion-item>
+        <!-- Accordion tab title -->
+        <a href="#" class="accordion-title">Accordion 1</a>
 
-  <label>
-    <span>Content type</span>
-    <input id="content-type" type="text" name="content-type" bind:value={contentType}>
-  </label>
-
-  <button id="start-packaging" on:click|preventDefault={startPackaging} class="button">Start Packaging</button>
-</form>
-
-<h2 id="packaging-status">
-  {#if status === "Ready"}
-    <span id="status-ready">Ready</span>
-  {:else}
-    <span id="status-working">Packaging...</span>
-  {/if}
-</h2>
-
-<h3>Packages</h3>
-<ul id="package-list">
-{#each packages as pkg}
-  <li>
-    <span class="location">{pkg.path}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
-  </li>
-{/each}
-</ul>
-
-<h3>Errors</h3>
-<ul id="error-list">
-{#each errors as pkg}
-  <li>
-    <span class="location">{pkg.path}</span> (<span class="content-type">{pkg.contentTypeId}</span>)
-  </li>
-{/each}
-</ul>
-
-<svelte:head>
-<script type="module" src="../node_modules/@umich-lib/components/dist/umich-lib/umich-lib.esm.js"></script>
-</svelte:head>
+        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
+        <div class="accordion-content" data-tab-content>
+          <p>Panel 1. Lorem ipsum dolor</p>
+          <a href="#">Nowhere to Go</a>
+        </div>
+      </li>
+    </ul>
+  </aside>
+  <article class="app-inspector">
+    <h2 class="h6">Inspector</h2>
+    <div class="grid-container artifact-details">
+      <div class="artifact-row grid-x grid-padding-x align-middle">
+        <div class="metadata-field medium-4 cell">Identifier / Barcode</div>
+        <div class="metadata-value cell auto"><h3>39015234</h3></div>
+      </div>
+      <div class="artifact-row grid-x grid-padding-x align-middle">
+        <div class="metadata-field medium-4 cell">Content Type</div>
+        <div class="metadata-control medium-4 cell">
+          <select class="small">
+            <option>Digital Forensics</option>
+            <option>Video Game</option>
+          </select>
+        </div>
+      </div>
+      <div class="artifact-row grid-x grid-padding-x align-middle">
+        <div class="metadata-field medium-4 cell">Packaged Folder</div>
+        <div class="metadata-value medium-4 cell">bagged/39015234</div>
+        <div class="metadata-control medium-4 cell"><button class="button small expanded">Package</button></div>
+      </div>
+      <div class="artifact-row grid-x grid-padding-x align-middle">
+        <div class="metadata-field medium-4 cell">Dark Blue ID</div>
+        <div class="metadata-value medium-4 cell"><em>(Not yet assigned)</em></div>
+        <div class="metadata-control medium-4 cell"><button class="button small expanded disabled">Upload to Assign</button></div>
+      </div>
+    </div>
+  </article>
+  <article class="app-events">
+    <h2 class="h6">Events</h2>
+    <table id="event-log" class="hover">
+      <thead>
+        <tr>
+          <th>Identifier</th>
+          <th>Content Type</th>
+          <th>Event</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+          <td>foo</td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</div>

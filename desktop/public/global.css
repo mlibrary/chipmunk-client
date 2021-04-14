@@ -1,38 +1,79 @@
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+:root {
+  --color-light-gray: #ccc;
+  --color-dark-gray: #666;
 }
 
-#app-container {
-  width: 100vw;
+.app-shell {
+  background: white;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
+
+  display: grid;
+  grid-template-columns: [workspace] minmax(150px, 1fr) [details] minmax(450px, 3fr) [end];
+  grid-template-rows: [header] min-content [workspace inspector] 300px [events] minmax(300px, 1fr) [end];
+  gap: 1px;
 }
 
-header#app-header {
-  background-color: var(--color-blue-100);
-  padding: var(--space-x-small);
-  font-weight: var(--bold);
-  height: 35px;
-  flex-shrink: 0;
+.app-header {
+  grid-column: 1 / end;
+  border-bottom: 1px solid #9999ee;
 }
 
-main {
-  background-color: light-gray;
-  flex-grow: 1;
-  overflow-x: auto;
+.app-workspace {
+  grid-column: workspace;
+  grid-row: workspace / end;
+  border-right: 1px solid var(--color-dark-gray)
 }
 
-label {
-  display: block;
+.app-inspector {
+  grid-column: details;
+  grid-row: inspector;
+  border-bottom: 1px solid var(--color-light-gray)
 }
 
-label > span {
-  display: block;
+.app-events {
+  grid-column: details;
+  grid-row: events;
 }
 
-form > button {
-  margin-top: var(--space-large);
+h2 {
+  background: #f6f6f6;
+  border-bottom: 1px solid var(--color-light-gray)
+}
+
+.app-events h2 {
+  margin-bottom: 0;
+}
+
+h3.artifact-id-banner {
+  padding-left: 1rem;
+}
+
+.artifact-row {
+  margin: 0 0 1rem;
+}
+.metadata-field {
+  text-align: right;
+  color: var(--color-dark-gray);
+}
+
+.metadata-control .button {
+  margin: 0;
+}
+
+.metadata-control select {
+  margin: 0;
+}
+
+#event-log {
+  margin-top: 0;
+  font-size: 0.8rem;
+  overflow-y: auto;
+}
+
+#event-log_wrapper {
+  font-size: 0.8rem;
+}
+
+#event-log_wrapper table {
+  margin-top: 0 !important;
 }

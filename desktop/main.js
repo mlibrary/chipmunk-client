@@ -9,8 +9,8 @@ let win
 
 function createWindow () {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 980,
+    height: 680,
     webPreferences: {
       preload: path.join(app.getAppPath(), 'preload.js')
     }

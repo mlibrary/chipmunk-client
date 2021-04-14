@@ -36,6 +36,7 @@
     "electron": "^12.0.1",
     "electron-reloader": "^1.2.0",
     "fs-extra": "^8.1.0",
+    "jquery": "^3.6.0",
     "mocha": "^8.3.2",
     "rollup": "^2.42.3",
     "rollup-plugin-css-only": "^3.1.0",
@@ -52,9 +53,13 @@
   "dependencies": {
     "@umich-lib/components": "^1.0.8",
     "@umich-lib/css": "^1.0.9-dev.64",
+    "datatables.net-fixedheader-zf": "^3.1.8",
+    "datatables.net-scroller-zf": "^2.0.3",
+    "datatables.net-zf": "^1.10.24",
     "dedent": "^0.7.0",
     "electron-squirrel-startup": "^1.0.0",
     "esm": "^3.2.25",
+    "foundation-sites": "^6.6.3",
     "numl": "^1.0.0-beta.25"
   },
   "standard": {
