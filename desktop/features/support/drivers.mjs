@@ -10,6 +10,10 @@ class Setup {
     this._filesystem = filesystem
   }
 
+  async aDigitalArtifactDirectory () {
+    return await this.setupFixture('digital')
+  }
+
   async aRawDigitalArtifact () {
     return { location: await this.setupFixture('digital') }
   }
@@ -49,7 +53,6 @@ class Filesystem {
   }
 
   // This copies the contents of the source directory into an
-  // already-existing destination directory.
   async copyContents (sourceDirectory, destinationDirectory) {
     await fse.copy(sourceDirectory, destinationDirectory)
   }
@@ -76,11 +79,48 @@ class UI {
     }
   }
 
+  async trackDirectory (path, contentTypeName) {
+    await this.addArtifact()
+    await this.selectPath(path)
+    await this.selectContentTypeName(contentTypeName)
+    await this.addToWorkspace()
+  }
+
+  async getWorkspaceArtifactIds () {
+    const els = await this_.browser.$$('#workspace-artifacts li')
+    let ids = []
+    for (el of els) {
+      ids.push(await first.getAttribute('data-identifier'))
+    }
+    return ids
+  }
+
   async packageArtifacts (contentTypeId, artifacts) {
     await this.selectArtifacts(artifacts)
     await this.selectContentType(contentTypeId)
     await this.startPackaging()
     await this.readyForPackaging()
+  }
+
+  async addArtifact () {
+    const el = await this._browser.$('#add-artifact')
+    await el.click()
+    await (await this._browser.$('#new-artifact')).waitForExist()
+  }
+
+  async selectPath (path) {
+    const el = await this._browser.$('#new-artifact-path')
+    await el.setValue(path)
+  }
+
+  async selectContentTypeName (contentTypeName) {
+    const select = await this._browser.$('#new-artifact-type')
+    await select.selectByVisibleText(contentTypeName)
+  }
+
+  async addToWorkspace () {
+    const btn = await this._browser.$('#new-artifact-track')
+    await btn.click()
   }
 
   async selectArtifacts (artifacts) {

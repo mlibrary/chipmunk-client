@@ -17,9 +17,10 @@ export default class RawArtifact {
   constructor ({ contentTypeId, path }) {
     this.contentTypeId = contentTypeId
     this.path = path
+    this.identifier = this.parseIdentifier()
   }
 
-  get identifier () {
+  parseIdentifier () {
     return path.basename(this.path)
   }
 

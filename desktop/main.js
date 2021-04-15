@@ -1,11 +1,30 @@
-const { app, BrowserWindow } = require('electron')
+const { app, ipcMain, BrowserWindow } = require('electron')
 const path = require('path')
+const Store = require('electron-store')
 
 try {
   require('electron-reloader')(module)
 } catch {}
 
 let win
+
+const schema = {
+	artifacts: {
+		type: 'object',
+    default: {}
+	}
+}
+
+let globalStore = new Store()
+globalThis.globalStore = globalStore
+
+ipcMain.handle("getStoreValue", async (event, key) => {
+  return await globalStore.get(key);
+});
+
+ipcMain.handle("setStoreValue", (event, key, value) => {
+  globalStore.set(key, value);
+});
 
 function createWindow () {
   win = new BrowserWindow({

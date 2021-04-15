@@ -28,6 +28,7 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
     "@wdio/sync": "^7.2.1",
     "chai": "^4.3.4",
@@ -58,6 +59,7 @@
     "datatables.net-zf": "^1.10.24",
     "dedent": "^0.7.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^7.0.3",
     "esm": "^3.2.25",
     "foundation-sites": "^6.6.3",
     "numl": "^1.0.0-beta.25"

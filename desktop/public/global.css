@@ -19,6 +19,7 @@
 }
 
 .app-workspace {
+  overflow-y: auto;
   grid-column: workspace;
   grid-row: workspace / end;
   border-right: 1px solid var(--color-dark-gray)

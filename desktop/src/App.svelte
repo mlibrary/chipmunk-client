@@ -1,5 +1,7 @@
 <script>
-  import { onMount } from 'svelte'
+import { onMount } from 'svelte'
+import ArtifactDetail from './ArtifactDetail.svelte'
+import { artifactList } from './stores'
 
 let packages = []
 let errors = []
@@ -7,7 +9,16 @@ let artifactLocations
 let contentType
 let status = "Ready"
 
+const Modes = Object.freeze({ Detail: 'detail', AddArtifact: 'add-artifact' })
+let mode = Modes.AddArtifact
+
 let eventTable
+
+let contentTypeId
+let artifactPath
+let selectedArtifact
+
+let tracked = []
 
 onMount(() => {
   jQuery(document).foundation()
@@ -25,7 +36,6 @@ function packaging(artifact) {
 
 function packaged(artifact) {
   console.log(`Packaged: ${artifact.path} (${artifact.contentTypeId})`)
-  packages = [...packages, artifact]
 }
 
 function failed(artifact, err) {
@@ -56,73 +66,72 @@ function startPackaging() {
   interactors.PackageArtifacts({contentTypeId: contentType, artifactLocations: locations, listener})
 }
 
+function showAdd () {
+  mode = Modes.AddArtifact
+}
+
+async function trackArtifact () {
+  const artifact = await interactors.TrackArtifact({ path: artifactPath, contentTypeId })
+  artifactList.push(artifact)
+  viewDetail(artifact)
+}
+
+async function viewDetail (artifact) {
+  selectedArtifact = artifact
+  mode = Modes.Detail
+}
 </script>
+
 <div class="app-shell">
   <div class="app-header">
     <h1 class="h4 subheader">Dark Blue Uploader</h1>
   </div>
+
   <aside class="app-workspace">
     <h2 class="h6">Workspace</h2>
-    <ul class="accordion" data-accordion>
-      <li class="accordion-item is-active" data-accordion-item>
-        <!-- Accordion tab title -->
-        <a href="#" class="accordion-title">Accordion 1</a>
-
-        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
-        <div class="accordion-content" data-tab-content>
-          <p>Panel 1. Lorem ipsum dolor</p>
-          <a href="#">Nowhere to Go</a>
-        </div>
-      </li>
-      <li class="accordion-item" data-accordion-item>
-        <!-- Accordion tab title -->
-        <a href="#" class="accordion-title">Accordion 1</a>
-
-        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
-        <div class="accordion-content" data-tab-content>
-          <p>Panel 1. Lorem ipsum dolor</p>
-          <a href="#">Nowhere to Go</a>
-        </div>
-      </li>
-      <li class="accordion-item" data-accordion-item>
-        <!-- Accordion tab title -->
-        <a href="#" class="accordion-title">Accordion 1</a>
-
-        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
-        <div class="accordion-content" data-tab-content>
-          <p>Panel 1. Lorem ipsum dolor</p>
-          <a href="#">Nowhere to Go</a>
-        </div>
-      </li>
+    <div><button id="add-artifact" on:click|preventDefault={showAdd} class="button secondary small">Add Artifact</button></div>
+    <ul id="workspace-artifacts" class="vertical menu">
+      {#each $artifactList.list as artifact}
+        <li data-identifier={artifact.identifier} data-path={artifact.path}>
+          <button on:click|preventDefault={() => { viewDetail(artifact) }}>{artifact.identifier}</button>
+        </li>
+      {/each}
     </ul>
   </aside>
+
   <article class="app-inspector">
     <h2 class="h6">Inspector</h2>
-    <div class="grid-container artifact-details">
-      <div class="artifact-row grid-x grid-padding-x align-middle">
-        <div class="metadata-field medium-4 cell">Identifier / Barcode</div>
-        <div class="metadata-value cell auto"><h3>39015234</h3></div>
-      </div>
-      <div class="artifact-row grid-x grid-padding-x align-middle">
-        <div class="metadata-field medium-4 cell">Content Type</div>
-        <div class="metadata-control medium-4 cell">
-          <select class="small">
-            <option>Digital Forensics</option>
-            <option>Video Game</option>
-          </select>
+    {#if mode === Modes.Detail}
+      <ArtifactDetail artifact={selectedArtifact} eventTable={eventTable}></ArtifactDetail>
+    {:else}
+    <form id="new-artifact">
+      <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+          <div class="cell auto">
+            <label>Artifact Path
+              <input id="new-artifact-path" type="text" bind:value={artifactPath} placeholder="/full/path/to/artifact/directory">
+            </label>
+          </div>
+        </div>
+        <div class="grid-x grid-padding-x">
+          <div class="cell auto">
+            <label>Content Type
+              <select id="new-artifact-type" bind:value={contentTypeId}>
+                  <option value="video">AMI / Video</option>
+                  <option value="digital">Digital Forensics</option>
+                  <option value="video_game">Video Game</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="grid-x grid-padding-x">
+          <div class="cell medium-4 medium-offset-4">
+            <button id="new-artifact-track" on:click|preventDefault={trackArtifact} class="button expanded">Track Artifact</button>
+          </div>
         </div>
       </div>
-      <div class="artifact-row grid-x grid-padding-x align-middle">
-        <div class="metadata-field medium-4 cell">Packaged Folder</div>
-        <div class="metadata-value medium-4 cell">bagged/39015234</div>
-        <div class="metadata-control medium-4 cell"><button class="button small expanded">Package</button></div>
-      </div>
-      <div class="artifact-row grid-x grid-padding-x align-middle">
-        <div class="metadata-field medium-4 cell">Dark Blue ID</div>
-        <div class="metadata-value medium-4 cell"><em>(Not yet assigned)</em></div>
-        <div class="metadata-control medium-4 cell"><button class="button small expanded disabled">Upload to Assign</button></div>
-      </div>
-    </div>
+    </form>
+    {/if}
   </article>
   <article class="app-events">
     <h2 class="h6">Events</h2>
@@ -136,84 +145,6 @@ function startPackaging() {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
-        <tr>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-          <td>foo</td>
-        </tr>
       </tbody>
     </table>
   </article>
