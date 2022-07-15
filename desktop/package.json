@@ -47,7 +47,7 @@
     "sirv-cli": "^1.0.11",
     "spectron": "^14.0.0",
     "standard": "^16.0.3",
-    "svelte": "^3.35.0"
+    "svelte": "^3.49.0"
   },
   "dependencies": {
     "@umich-lib/components": "^1.0.8",
